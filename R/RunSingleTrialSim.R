@@ -4,7 +4,7 @@ lPltfDsgn <- list()
 
 # Initialize lRecrPars and get Accrual Rate Function
 lPltfDsgn$lRecrPars <- lRecrPars(lambda = 4)
-fRecrFun  <- match.fun(lPltfDsgn$lRecrPars$fRecrProc)
+fnRecrFun  <- match.fun(lPltfDsgn$lRecrPars$fnRecrProc)
 
 # while (trial_is_running) {
   
@@ -14,7 +14,7 @@ fRecrFun  <- match.fun(lPltfDsgn$lRecrPars$fRecrProc)
   # Call Accrual Function with default arguments + current Time and active Cohorts
   nNewPats <- 
     do.call(
-      fRecrFun, 
+      fnRecrFun, 
       args = list(
         lArgs     = lPltfDsgn$lRecrPars$lArgs, 
         dCurrTime = dCurrTime, 

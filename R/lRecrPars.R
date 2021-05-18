@@ -2,15 +2,15 @@
 #' 
 #' Functions for creating, validating and simple use of class lRecrPars
 #' 
-#' @param fRecrPars   Function
-#' @param lArgs       Arguments
+#' @param fnRecrPars   Function
+#' @param lArgs        Arguments
 #' 
 #' @examples
 #' 
 #' x <- lRecrPars(4)
 #' validate_lRecrPars(x)
 #' y <- list(
-#'   fRecrProc = function(x) {x},
+#'   fnRecrProc = function(x) {x},
 #'   lArgs = list()
 #' )
 #' validate_lRecrPars(y)
@@ -22,7 +22,7 @@
 # Constructor Function
 new_lRecrPars <- function(
   # Function that is used in recruitment
-  fRecrProc = function(
+  fnRecrProc = function(
     dCurrTime, 
     dActvIntr, 
     lArgs
@@ -32,8 +32,8 @@ new_lRecrPars <- function(
   ) {
   structure(
     list(
-      fRecrProc = fRecrProc,
-      lArgs     = lArgs
+      fnRecrProc = fnRecrProc,
+      lArgs      = lArgs
      ),
     class       = "lRecrPars"
   )
@@ -51,7 +51,7 @@ validate_lRecrPars <- function(x) {
   }
   
   # Check whether correct names
-  if (names(x) != c("fRecrProc", "lArgs")) {
+  if (names(x) != c("fnRecrProc", "lArgs")) {
     stop(
       "Wrong names."
     )
@@ -96,8 +96,8 @@ lRecrPars <- function(lambda) {
   
   new_lRecrPars(
     # In easy Version: Use simple Poisson Distribution per iteration
-    fRecrProc = function(dCurrTime, dActvIntr, lArgs) {rpois(1, lambda = lArgs$lambda)},
-    lArgs     = list(lambda = lambda)
+    fnRecrProc = function(dCurrTime, dActvIntr, lArgs) {rpois(1, lambda = lArgs$lambda)},
+    lArgs      = list(lambda = lambda)
   )
 
 }
