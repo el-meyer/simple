@@ -1,2 +1,9 @@
-^simpl\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
+^packrat/
+^\.Rprofile$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^README\.Rmd$
+^LICENSE
