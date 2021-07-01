@@ -1,6 +1,6 @@
 #' Between ISA allocation ratio
 #' 
-#' Functions and rules for between ISA allocation ratop of class lIntrAlloc
+#' Functions and rules for between ISA allocation ratio of class lIntrAlloc
 #' 
 #' @param 
 #' 

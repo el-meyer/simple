@@ -2,8 +2,10 @@
 #' 
 #' Functions for creating, validating and simple use of class lRecrPars
 #' 
-#' @param fnRecrPars   Function
-#' @param lArgs        Arguments
+#' @param fnRecrPars   Function which will simulate number of new patient arrivals in time step
+#'                     dependent on the current platform time, number of active interventions and 
+#'                     further arugments lArgs
+#' @param lArgs        Further arguments used in fnRecrPars
 #' 
 #' @examples
 #' 
@@ -23,9 +25,9 @@
 new_lRecrPars <- function(
   # Function that is used in recruitment
   fnRecrProc = function(
-    dCurrTime, 
-    dActvIntr, 
-    lArgs
+    dCurrTime, # current platform time
+    dActvIntr, # number of currently active interventions
+    lArgs      # List of further arguments for function
     ) {}, 
   # List of Arguments used with fRecrProc function
   lArgs = list()
