@@ -22,15 +22,15 @@ new_lRecrPars <- function(
   fnRecrProc = function(
     lGlobVars,  # List of global Variables
     lAddArgs    # List of further arguments for function
-    ) {}, 
+  ) {}, 
   # List of Arguments used with fRecrProc function
   lAddArgs = list()
-  ) {
+) {
   structure(
     list(
       fnRecrProc = fnRecrProc,
       lAddArgs   = lAddArgs
-     ),
+    ),
     class        = "lRecrPars"
   )
 }
@@ -66,7 +66,7 @@ validate_lRecrPars <- function(x) {
       "First element is not a function."
     )
   }
-    
+  
   # Error if second element not a list
   if (!is.list(x[[2]])) {
     stop(
@@ -95,14 +95,26 @@ validate_lRecrPars <- function(x) {
 #' @export
 #' @rdname lRecrPars
 # Helper Function
-lRecrPars <- function(lambda) {
+lIntrIncl <- function(dRandAddProb) {
   
-  new_lRecrPars(
-    # In easy Version: Use simple Poisson Distribution per iteration
-    fnRecrProc = function(lGlobVars, lAddArgs) {rpois(1, lambda = lAddArgs$lambda)},
-    lAddArgs   = list(lambda = lambda)
+  # Error if supplied probability is not between 0 and 1
+  if (dRandAddProb < 0 | dRandAddProb > 1) {
+    stop("Probability needs to be between 0 and 1.")
+  }
+  
+  # In simple version: 
+  # Replace outgoing ISAs only
+  # Maximum 10 ISAs in total
+  new_lIntrIncl(
+    bIntrRepl     = TRUE, # Replace exiting ISAs
+    nMaxIntr      = 10,   # Add maximum 10 ISAs during course of trial
+    nMaxAdd       = 2,    # Add maximum two ISAs at the same time
+    fnAddNewIntr  = function(dCurrTime, dLastAddTime, dActvIntr, nPatsPostAdd, lArgs) {
+      return(sample(0:1, size = 1, prob = c(1 - lArgs$dRandAddProb, lArgs$dRandAddProb)))
+    },                    # Add ISAs with a certain probability in every time unit
+    lAddArgs      = list(dRandAddProb = dRandAddProb)
   )
-
+  
 }
 
 #' @export
@@ -124,7 +136,7 @@ plot.lRecrPars <- function(x, dCurrTime = 1:52, dActvIntr = rep(1, 52), ...) {
   if (length(unique(sapply(lInpArgs, FUN = length))) != 1) {
     stop("Length of supplied global variables differs.")
   }
-
+  
   y <- numeric(length(dCurrTime))
   f <- match.fun(x$fnRecrProc)
   

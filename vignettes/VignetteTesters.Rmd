@@ -1,0 +1,23 @@
+---
+title: "VignetteTesters"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{VignetteTesters}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# library(simple)
+```
+
+# Purpose
+
+This vignette is intended for testers of the **simple** package. 

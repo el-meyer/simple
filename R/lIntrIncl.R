@@ -2,13 +2,15 @@
 #' 
 #' Rules for ISA starting times of class lPltfStopRule
 #' 
-#' @param bIntrRepl       Boolean - should exiting ISAs be replaced
-#' @param nMaxIntr        Maximum number of ISAs that can enter the platform over time
-#' @param nMaxAdd         Maximum number of ISAs that can enter the platform at any timepoint
-#' @param fnAddNewIntr    Function that checks how many new ISAs should be added to the platform
-#' @param lArgs           Further arguments used in fnAddNewIntr
+#' @param fnIntrIncl      Function that checks how many new ISAs should be added to the platform
+#' @param lAddArgs        Further arguments used in fnAddNewIntr
 #' 
 #' @examples
+#' 
+#' x <- lIntrIncl(4)
+#' validate_lIntrIncl(x)
+#' plot(x)
+#' summary(x)d
 #' 
 #' @name lIntrIncl
 #' 
@@ -17,23 +19,16 @@
 # Constructor Function
 new_lIntrIncl <- 
   function(
-    bIntrRepl    = NULL,  
-    nMaxIntr     = NULL, 
-    nMaxAdd      = NULL,
-    fnAddNewIntr = function(
-      dCurrTime,
-      dLastAddTime,
-      nPatsPostAdd
+    fnIntrIncl = function(
+      lGlobVars,
+      lAddArgs
     ) {},
-    lArgs        = list()
+    lAddArgs        = list()
   ) {
     structure(
       list(
-        bIntrRepl     = bIntrRepl,
-        nMaxIntr      = nMaxIntr,
-        nMaxAdd       = nMaxAdd,
-        fnAddNewIntr  = fnAddNewIntr,
-        lArgs         = lArgs
+        fnIntrIncl    = fnIntrIncl,
+        lAddArgs      = lAddArgs
       ),
       class       = "lIntrIncl"
     )
@@ -43,20 +38,219 @@ new_lIntrIncl <-
 # Validator Function
 validate_lIntrIncl <- function(x) {
   
+  # Error if length of list < 2
+  if (length(x) < 2) {
+    warning(
+      "Too few attributes were specified."
+    )
+  }
+  
+  # Check whether correct names
+  if (!identical(names(x), c("fnIntrIncl", "lAddArgs"))) {
+    stop(
+      "Wrong names."
+    )
+  }
+  
+  # Errors if first element not function
+  if (!is.function(x[[1]])) {
+    stop(
+      "First element is not a function."
+    )
+  }
+  
+  # Error if second element not a list
+  if (!is.list(x[[2]])) {
+    stop(
+      "Second element is not a list."
+    )
+  }
+  
+  f <- match.fun(x[[1]])
+  f_args <- as.list(args(f))
+  
+  # Check input parameters of function
+  if (
+    !"lGlobVars" %in% names(f_args) |
+    !"lAddArgs" %in% names(f_args)
+  ) {
+    stop(
+      "Function not properly specified."
+    )
+  }
+  
+  # Warnings if length of list > 2
+  if (length(x) > 2) {
+    warning(
+      "Too many attributes were specified; ignoring additional attributes."
+    )
+  }
+  
 }
 #' @export
 #' @rdname lIntrIncl
 # Helper Function
-lIntrIncl <- function(dRandAddProb) {
+lIntrIncl <- function(dMaxIntr) {
+  
   # In simple version: 
+  # Replace outgoing ISAs only
+  # Maximum x ISAs in total
   new_lIntrIncl(
-    bIntrRepl     = TRUE, # Replace exiting ISAs
-    nMaxIntr      = 10,   # Add maximum 10 ISAs during course of trial
-    nMaxAdd       = 2,    # Add maximum two ISAs at the same time
-    fnAddNewIntr  = function(dCurrTime, dLastAddTime, nPatsPostAdd, lArgs) {
-      return(sample(0:1, prob = c(1 - lArgs$dRandAddProb, lArgs$dRandAddProb)))
-    },                    # Add ISAs with a certain probability in every time unit
-    lArgs         = list(dRandAddProb = dRandAddProb)
+    fnIntrIncl  = function(lGlobVars, lAddArgs) {
+      # if both an ISA was outgoing in this time step and the maximum number has not yet been reached
+      # add as many ISAs as were outgoing
+      if (lGlobVars$lVars$dExitIntr > 0 & length(lGlobVars$lVars$vIntrInclTimes) < lAddArgs$dMaxIntr) {
+        # add as many as were outgoing but maximum as many as can still be added
+        dAdd <- min(lAddArgs$dMaxIntr - length(lGlobVars$lVars$vIntrInclTimes), lGlobVars$lVars$dExitIntr)
+      } else {
+        dAdd <- 0
+      }
+      return(dAdd)
+    },
+    lAddArgs      = list(dMaxIntr = dMaxIntr)
   )
+  
+}
+
+#' @export
+#' @rdname lIntrIncl
+# Plot Function
+# Expects vector of current times, assumptions regarding ISA in-trial-time
+# ISA in-trial-time can be fixed (e.g. 10 time units) or random (probability at every time step)
+# Number of ISAs at start can be chosen
+# Assumes that there are always enough ISAs in the pipeline
+plot.lIntrIncl <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_param = 10, intr_start = 1, ...) {
+  
+  if (dCurrTime[1] != 1) {
+    stop("First element of dCurrTime is not 1.")
+  }
+  
+  # Get all relevant Input Arguments
+  lInpArgs <- 
+    list(
+      dCurrTime = dCurrTime,
+      ...
+    )
+  
+  # All Input Arguments need to have the same length
+  if (length(unique(sapply(lInpArgs, FUN = length))) != 1) {
+      stop("Length of supplied global variables differs.")
+    }
+  
+  # get matching function
+  f <- match.fun(x$fnIntrIncl)
+  
+  # Number of ISAs at start
+  dActvIntr <- intr_start
+  vIntrInclTimes <- rep(0, intr_start)
+  
+  # Initialize exit times
+  dExitIntr <- 0
+  vIntrExitTimes <- numeric(0)
+  
+  # Initialize counts
+  vActvIntr <- numeric(length = length(dCurrTime) + 1)
+  vActvIntr[1] <- intr_start
+  vFinIntr <- numeric(length = length(dCurrTime) + 1)
+  vFinIntr[1] <- 0
+  
+  for (i in 1:length(dCurrTime)) {
+    
+    # Check whether any ISAs are outgoing at this time point
+    # Either fixed - then check inclusion times - or random - then draw randomly
+    if (intr_itt == "fixed") {
+      dExitIntr <- sum(vIntrInclTimes == (i - intr_itt_param))
+    }
+    if (intr_itt == "random") {
+      dExitIntr <- rbinom(1, length(vIntrInclTimes) - length(vIntrExitTimes), intr_itt_param)
+    }
+    
+    # Update vector of finished ISAs
+    vFinIntr[i+1] <- vFinIntr[i] + dExitIntr
+    
+    # Add the ISA exit times to vector
+    vIntrExitTimes <- c(vIntrExitTimes, rep(i, dExitIntr))
+    
+    lGlobVars <- structure(
+      list(
+        lVars = c(
+          lapply(lInpArgs, FUN = function(x) x[[i]]), # extra global variables + current platform time
+          list(
+            dActvIntr      = dActvIntr, # number of ISAs active at beginning of current platform time
+            dExitIntr      = dExitIntr, # number of outgoing ISAs at current platform time
+            vIntrInclTimes = vIntrInclTimes, # vector of all ISA inclusion times so far
+            vIntrExitTimes = vIntrExitTimes # vector of all ISA exit times so far
+          )
+        )
+      ), 
+      class = "lGlobVars"
+    )
+    
+    # call function to determine how many new ISAs to include
+    dIntrAdd <- 
+      round(
+        do.call(
+          f, 
+          args = list(
+            lGlobVars   = lGlobVars,
+            lAddArgs    = x$lAddArgs
+          )
+        )
+      )
+    
+    # Add ISA Inclusion Times
+    vIntrInclTimes <- c(vIntrInclTimes, rep(i, dIntrAdd))
+    
+    # Change number of active arms
+    dActvIntr <- length(vIntrInclTimes) - length(vIntrExitTimes)
+    
+    # Update vector of active ISAs
+    vActvIntr[i+1] <- dActvIntr
+    
+  }
+  
+  "%>%" <- dplyr::"%>%"
+  
+  mydata_arms <- 
+    dplyr::tibble(
+      Time        = c(0, dCurrTime),
+      Active      = vActvIntr,
+      Finished    = vFinIntr
+    ) %>% 
+    tidyr::pivot_longer(
+      c("Active", "Finished"),
+      names_to = "ISAs",
+      values_to = "Number"
+    )
+  
+  g1 <- 
+    ggplot2::ggplot(mydata_arms, ggplot2::aes(x = Time, y = Number, color = ISAs)) + 
+    ggplot2::geom_point() +
+    ggplot2::geom_line() + 
+    ggplot2::theme_bw() + 
+    ggplot2::ggtitle("Simulated number of active ISAs over time") + 
+    ggplot2::theme(
+      legend.direction = "horizontal", 
+      legend.position = "bottom",
+      legend.box = "horizontal"
+    )
+  
+  print(g1)
+  
+  invisible(mydata_arms)
+  
+}
+
+#' @export
+#' @rdname lIntrIncl
+# Summary Function
+summary.lIntrIncl <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnIntrIncl)))[2]
+  
+  cat("Specified inclusion function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lAddArgs)
   
 }

@@ -1,0 +1,60 @@
+---
+title: "Vignette for Authors"
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+    fig_caption: yes
+    highlight: textmate
+    code_folding: show
+vignette: >
+  %\VignetteIndexEntry{VignetteAuthors}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# library(simple)
+```
+
+# Purpose
+
+This vignette is intended for authors of the **simple** package. 
+
+
+# Naming and Coding convention
+
+## Naming
+
+## Coding
+
+### Style
+
+### Packages
+
+Wherever possible, base R functions should be used and chosen over functions from other packages. E.g., use
+
+```{r, eval = FALSE}
+dat2 <- 
+  dat[
+    dat$column == 1,
+    ]
+```
+
+instead of
+
+```{r, eval = FALSE}
+library(dplyr)
+dat2 <- 
+  dat %>% 
+  filter(
+    column == 1
+  )
+```

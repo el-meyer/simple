@@ -47,16 +47,22 @@ lFnDef <- function() {
     fnGenNewPatData = function(lPltfDsgn, lPltfTrial, dCurrTime) {
       
       # Get Accrual Rate Function
-      fnRecrProc  <- match.fun(lPltfDsgn$lIntrIncl$fnRecrProc)
+      fnRecrProc  <- match.fun(lPltfDsgn$lRecrPars$fnRecrProc)
       
       # Call Accrual Function with default arguments + current Time and number of active interventions
+      # no negative patients can be included
       nNewPats <- 
-        do.call(
-          fnRecrProc, 
-          args = list(
-            lArgs     = lPltfDsgn$lIntrIncl$lArgs, 
-            dCurrTime = dCurrTime, 
-            dActvIntr = dActvIntr
+        max(
+          0,
+          round(
+            do.call(
+              fnRecrProc, 
+              args = list(
+                lArgs     = lPltfDsgn$lRecrPars$lArgs, 
+                dCurrTime = dCurrTime, 
+                dActvIntr = dActvIntr
+              )
+            )
           )
         )
       
@@ -72,28 +78,30 @@ lFnDef <- function() {
       
       # Don't add new ISAs if maximum number is already reached
       # nInclIntr <- NUMBER OF INCLUDED ISAs
-      if (lPltfDsgn$lIntrIncl$nMaxIntr < nInclIntr) {
+      if (lPltfDsgn$lIntrIncl$nMaxIntr > nInclIntr) {
         
         # Initilize number of new ISAs to be added in this time step
         # add as any as left the platform trial or 0
         nNewIntr_replace <- ifelse(lPltfDsgn$lIntrIncl$bIntrRepl, nExitIntr, 0) 
         
         # Get Accrual Rate Function
-        fnAddNewIntr  <- match.fun(lPltfDsgn$lRecrPars$fnAddNewIntr)
+        fnAddNewIntr  <- match.fun(lPltfDsgn$lIntrIncl$fnAddNewIntr)
         
         # STILL TO CALCULATE FROM lPltfTrial -------------
         dLastAddTime <- 0 # Last Time an ISA was added
         nPatsPostAdd <- 0 # Number of Patients since last ISA was added
         
         nNewIntr_extra <- 
-          do.call(
-            fnAddNewIntr, 
-            args = list(
-              lArgs        = lPltfDsgn$lIntrIncl$lArgs, 
-              dCurrTime    = dCurrTime, 
-              dActvIntr    = dActvIntr,
-              dLastAddTime = dLastAddTime,
-              nPatsPostAdd = nPatsPostAdd
+          round(
+            do.call(
+              fnAddNewIntr, 
+              args = list(
+                lArgs        = lPltfDsgn$lIntrIncl$lArgs, 
+                dCurrTime    = dCurrTime, 
+                dActvIntr    = dActvIntr,
+                dLastAddTime = dLastAddTime,
+                nPatsPostAdd = nPatsPostAdd
+              )
             )
           )
         

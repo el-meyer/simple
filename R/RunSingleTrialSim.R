@@ -17,14 +17,14 @@ fnAddNewIntr     <- match.fun(lFnDef$fnAddNewIntr)
   fnGenNewPatData(
     lPltfTrial,
     lPltfDsgn, 
-    dCurrTime
+    lGlobVars
   )
   
   # Run Add New ISAs function
   fnAddNewIntr(
     lPltfTrial,
     lPltfDsgn, 
-    dCurrTime
+    lGlobVars
   )
   
 # }
