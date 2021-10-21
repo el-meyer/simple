@@ -1,13 +1,10 @@
 ---
 title: "Intervention Inclusion Module Vignette"
 output: 
-  html_document:
+  rmarkdown::html_vignette:
       toc: true
-      toc_float: true
       toc_depth: 3
       fig_caption: yes
-      highlight: textmate
-      code_folding: hide
 vignette: >
   %\VignetteIndexEntry{Intervention Inclusion Module Vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -33,7 +30,28 @@ The module will have global variables as well as specific arguments that can be 
 
 #### Global variables `lGlobVars` 
 
-Global variables are inputs that are used in different modules and change during the simulation. The current time could be an example for a variable of interest for which it makes sense to be globally available. Another global variable could be the in-trial-time of interventions.
+Global variables are inputs that are used in different modules and represent a current snapshot of the simulation therefore being subject to changes at every time step. The current time could be an example for a variable of interest for which it makes sense to be globally available.
+
+The following global variables are implemented in the *lIntrIncl* module
+
+**`dCurrTime`**  
+Current trial time
+
+**`dActvIntr`**  
+Number of ISAs active at beginning of current platform time
+   
+**`dExitIntr`**  
+Number of outgoing ISAs at current platform time
+  
+**`vIntrInclTimes`**  
+Vector of all ISA inclusion times so far
+  
+**`vIntrExitTimes`**  
+Vector of all ISA exit times so far
+ 
+
+
+
 
 #### Additional arguments `lAddArgs`
 
@@ -74,6 +92,7 @@ For example:
 
 ```{r}
 x <- lIntrIncl(5)
+
 ```
 
 

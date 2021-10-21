@@ -1,0 +1,59 @@
+---
+title: "Global Parameters Module Vignette"
+output: 
+  rmarkdown::html_vignette:
+      toc: true
+      toc_depth: 3
+      fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{Global Parameters Module Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+  
+
+---
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height = 4, fig.width = 7)
+
+source("..\\R\\lGlobVars.R")
+
+```
+
+
+## Introduction
+
+This vignette aims to describe the global variables module of the *simple* package.
+The purpose of the module is to gather and structure all global variables used across different modules. 
+
+This module is not designed to be used by the user primarily, but to make the remaining modules more efficient in programming.
+Below all global variables used in different modules are displayed.
+
+Global variables represent a snapshot of the trial at the current time
+
+
+## Global variables
+
+**`dCurrTime`** 
+
+* Current time stamp
+* used in every module
+
+**`dActvIntr`**  
+
+* Number of ISAs active at beginning of current platform time
+* used in *lIntrIncl*, *lRecrPars*
+  
+**`dExitIntr`**  
+
+* Number of outgoing ISAs at current platform time
+* used in *lIntrIncl*
+  
+**`vIntrInclTimes`**  
+
+* Vector of all ISA inclusion times so far
+* used in *lIntrIncl*
+  
+**`vIntrExitTimes`**  
+
+* Vector of all ISA exit times so far
+* used in *lIntrIncl*

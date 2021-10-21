@@ -1,13 +1,10 @@
 ---
 title: "Recruitment Parameters Module Vignette"
 output: 
-  html_document:
+  rmarkdown::html_vignette:
       toc: true
-      toc_float: true
       toc_depth: 3
       fig_caption: yes
-      highlight: textmate
-      code_folding: hide
 vignette: >
   %\VignetteIndexEntry{Recruitment Parameters Module Vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -20,6 +17,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, fig.height = 6, fig.width = 7)
 
 source("..\\R\\lRecrPars.R")
+
 ```
 
 ## Introduction
