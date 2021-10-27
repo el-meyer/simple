@@ -78,7 +78,7 @@ The summary call provides information about the input you provided. It gives an 
 Try to use the module to program the following tasks according to the instructions. You can display the solution upon clicking the *code* button. The examples of the vignette may serve as a helping hand.
 The plots below show what the plotted output could look like.
 
-**1. Create a scenario, where the number of patients recruited is taken from a binomial distribution with n = 20 and p = 0.2**
+**1. Create a scenario, where the number of patients recruited at every time step is taken from a binomial distribution with n = 20 and p = 0.2**
 
 ```{r}
 x <- new_lRecrPars(
@@ -86,21 +86,28 @@ x <- new_lRecrPars(
     n_pat = rbinom(1, lAddArgs$n, lAddArgs$prob)
   },
   
+  # here we define the parameters used in the function call
   lAddArgs = list(n = 20,
                   prob = 0.2)
 )
+
+# the plot functions acts as a proxy for the actual simulation in which the object of class lRecrPars is used
 plot(x)
 ```
-**2. Create a scenario where every 3rd time units the number of patients recruited corresponds to the current time unit. In the remaining time units recruitment is stopped.**
+
+
+**2. Create a scenario where every 3rd time unit the number of patients recruited corresponds to the current time unit. In the remaining time units no recruitment happens.**
 
 ```{r}
 x <- new_lRecrPars(
   fnRecrProc = function(lGlobVars, lAddArgs){
+    # if boolean variable lGlobVars$lVars$bEnrOpen is TRUE, then a number of patients as high as the current time step is recruited
     n_pat <- lGlobVars$lVars$dCurrTime * lGlobVars$lVars$bEnrOpen
   }
   
 )
 
+# Here we define the enrollment windows of the trial. It has to be a vector of the same length as the simulation duration which is by default set to 52.
 plot(x,
      bEnrOpen = c(rep(c(FALSE, FALSE, TRUE), length.out = 52)))
 
@@ -118,7 +125,9 @@ plot(x,
 # plot(x)
 
 ```
-**3. Create a scenario where the number of patients recruited is drawn from a poisson distribution. The distribution parameter *lambda* depends on the number of active arms and the time period. **
+
+
+**3. Create a scenario where the number of patients recruited at every time step is drawn from a poisson distribution. The distribution parameter *lambda* depends on the number of active arms and the time period. **
 
 **For time period 1-40: lambda = 5* number of active arms**
 
@@ -130,9 +139,13 @@ plot(x,
 
 **For time period 31-52: number of active arms = 3**
 
+*Hint: number of active arms is specified in the plot function, as this is not a feature of the lRecrPars module.
+
 ```{r}
 x <- new_lRecrPars(
   fnRecrProc = function(lGlobVars, lAddArgs){
+    
+    # depending on the time unit, a different lambda is taken for the distribution.
     if(lGlobVars$lVars$dCurrTime <= 40){
       n_pat <- rpois(1, lambda = lAddArgs$lambda1 * lGlobVars$lVars$dActvIntr)
     } else {
@@ -140,10 +153,12 @@ x <- new_lRecrPars(
     }
   },
   
+  # here we set the different lambdas
   lAddArgs = list(lambda1 = 5,
                   lambda2 = 10)
 )
 
+# here the number of active arms is specified for each time unit. It has to be a vector of the same length as the simulation duration which is by default set to 52.
 plot(x,
      dActvIntr = c(rep(1, 10), rep(2, 20), rep(3, 22)))
 ```
@@ -152,7 +167,8 @@ plot(x,
 
 
 ### Remarks
-Notice in scenario 1 the values of n and p could be directly written into the *rbinom* function without stating them in the *lAddArgs* argument. Perks of stating them in *lAddArgs* are the appearance in an overview you might want to print using summary() as well as efficiency if these arguments are used more than once.
-Notice the alternative implementation of Task 2 in the solution, suggesting there are many ways of implementing a scenario depending on your programming preferences. 
+Note that in scenario 1 the values of n and p could be directly written into the *rbinom* function without stating them in the *lAddArgs* argument. Perks of stating them in *lAddArgs* are the appearance in an overview you might want to print using summary() as well as efficiency if these arguments are used more than once.
+
+Notice the alternative implementation of Task 2 in the solution, suggesting there are many ways of implementing a scenario depending on your programming preferences. The first implementation is suggested however, as the enrollment window is probably an external variable which this way can be accessed without directly having to add the argument into the function.
 
 The global variables saved in the list *lGlobVars* have a fixed name which can not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lGlobVars* will contain an overview of all the global variables used in any module. The naming convention consists of lowerCamelCase with the first part being a letter describing the data type of the object(l = list, b = bool, v = vector, d = number)
