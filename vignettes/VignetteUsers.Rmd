@@ -21,3 +21,26 @@ knitr::opts_chunk$set(
 # Purpose
 
 This vignette is intended for users of the **simple** package. 
+It gives an overview of the functionalities of the package, its modules and how to use them.
+
+
+**simple** is a modular package for simulating clinical trials. It comprises different modules, which together make up a platform trial. The modularity of the package allows users to adapt any part of the simulation separately without having to struggle with one complex and confusing function. Some modules can be left out if there is no need for them in a specific simulation. There is an overall simulation module/function which takes information from the arguments users specify in each module.
+
+Detailed information on each individual package can be taken from its vignette, including how to use it and exemplary scenarios.
+
+
+# Modules 
+
+The following modules are available up to date:
+
+**`lIntrIncl`** 
+
+Controls the inclusion of interventions into the trial.
+
+**`lRecrPars`** 
+
+Specifies the recruitment of patients.
+
+
+
+
