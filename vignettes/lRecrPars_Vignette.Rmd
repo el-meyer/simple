@@ -29,9 +29,9 @@ The purpose of the module is to control the recruitment of patients over time.
 
 The module will have global variables as well as specific arguments that can be added and specified in the recruitment function
 
-#### Global variables `lGlobVars` 
+#### Current status of platform trial `lPltfTrial` 
 
-Global variables are inputs that are used in different modules and change during the simulation. The current time could be an example for a variable of interest for which it makes sense to be globally available.
+This is a snapshot image of the current platform trial status and changes during the simulation. The current time could be an example for a variable of interest for which it makes sense to be available to the modules.
 
 #### Additional arguments `lAddArgs`
 
@@ -53,7 +53,7 @@ new_lRecrPars()
 ```
 
 **`$fnRecrProc`**
-The necessary input is a function `fnRecrProc` determining how patients are recruited over time. In the function call you input the global variables to be used in the `lGlobVars` argument and determine the list with further arguments which affect your recruitment algorithm in `lAddArgs`. 
+The necessary input is a function `fnRecrProc` determining how patients are recruited over time. In the function call you input the current platform trial status to be used in the `lPltfTrial` argument and determine the list with further arguments which affect your recruitment algorithm in `lAddArgs`. 
 Within the curly braces `{}` you execute the function operations.
 
 **`$lAddArgs`**
@@ -81,7 +81,7 @@ plot(x)
 
 Plotting objects created by `lRecrPars` or `new_lRecrPars` displays the development of patients recruitment as well as the number of active arms over time.
 
-Global variables that this specific plot function requires are `dCurrTime` and `dActvIntr`, describing the current time and the number of active arms at the current time respectively. By default the current time goes from 1 to 52 and only one arm is active at every time point. These vectors have to be of the same length.
+Snapshot variables that this specific plot function requires are `dCurrTime` and `dActvIntr`, describing the current time and the number of active arms at the current time respectively. By default the current time goes from 1 to 52 and only one arm is active at every time point. These vectors have to be of the same length.
 
 For the actual plot you just call `plot()` with the object you want to plot.
 
@@ -90,7 +90,7 @@ x <- lRecrPars(10)
 plot(x)
 ```
 
-Any changes in global variables can be specified in the plot call. If you are only interested in 20 time steps rather than 52 and want to have more than one active arm for some time steps you can call:
+Any changes in snapshot variables can be specified in the plot call. If you are only interested in 20 time steps rather than 52 and want to have more than one active arm for some time steps you can call:
 
 ```{r}
 x <- lRecrPars(10)
@@ -101,13 +101,13 @@ plot(x,
 ```
 
 
-Optionally you can also state the global variables you added in the object created by the `new_lRecrPars` function.
+Optionally you can also state the snapshot variables you added in the object created by the `new_lRecrPars` function.
 
 
 
 ### Summary
 
-The summary call provides information about the input you provided. It gives an overview about global and additional variables as well the function that was implemented.
+The summary call provides information about the input you provided. It gives an overview about snapshot and additional variables as well the function that was implemented.
 
 ```{r}
 summary(x)
@@ -134,8 +134,8 @@ summary(x)
 ```{r}
 #every time step draw from poisson distribution with lambda = 50 / current time
 x <- new_lRecrPars(
-  fnRecrProc = function(lGlobVars, lAddArgs) {
-    rpois(1, 50 / lGlobVars$lVars$dCurrTime)
+  fnRecrProc = function(lPltfTrial, lAddArgs) {
+    rpois(1, 50 / lPltfTrial$lSnap$dCurrTime)
   }
 )
 
@@ -154,8 +154,8 @@ summary(x)
 
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-      if(lGlobVars$lVars$dCurrTime %% 7 == 0) {
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+      if(lPltfTrial$lSnap$dCurrTime %% 7 == 0) {
         rpois(1, lambda = lAddArgs$lambda2)
       } else {
         rpois(1, lambda = lAddArgs$lambda1)
@@ -174,8 +174,8 @@ summary(x)
 ```{r}
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-        min(lAddArgs$growth ^ lGlobVars$lVars$dCurrTime * lGlobVars$lVars$dActvIntr, lAddArgs$cap)
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+        min(lAddArgs$growth ^ lPltfTrial$lSnap$dCurrTime * lPltfTrial$lSnap$dActvIntr, lAddArgs$cap)
     },
     lAddArgs   = list(growth = 1.2, cap = 100)
   )
@@ -199,9 +199,9 @@ summary(x)
 ```{r}
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-      pat <- rpois(1, lambda = lAddArgs$lambda) * lGlobVars$lVars$dActvIntr * 6
-      ifelse(lGlobVars$lVars$bEnrOpen, pat, 0)
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+      pat <- rpois(1, lambda = lAddArgs$lambda) * lPltfTrial$lSnap$dActvIntr * 6
+      ifelse(lPltfTrial$lSnap$bEnrOpen, pat, 0)
     },
     lAddArgs   = list(lambda = 4)
   )
@@ -231,8 +231,8 @@ summary(x)
 ```{r}
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-      100 * (1 + sin(lGlobVars$lVars$dCurrTime))
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+      100 * (1 + sin(lPltfTrial$lSnap$dCurrTime))
     }
   )
 

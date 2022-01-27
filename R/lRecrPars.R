@@ -20,10 +20,10 @@
 new_lRecrPars <- function(
   # Function that is used in recruitment
   fnRecrProc = function(
-    lGlobVars,  # List of global Variables
-    lAddArgs    # List of further arguments for function
+    lPltfTrial, # List of current trial progress
+    lAddArgs    # List of further arguments for this module
     ) {}, 
-  # List of Arguments used with fRecrProc function
+  # List of Arguments used with fnRecrProc function
   lAddArgs = list()
   ) {
   structure(
@@ -78,7 +78,7 @@ validate_lRecrPars <- function(x) {
   f_args <- as.list(args(f))
   
   # Check input parameters of function
-  if (!"lGlobVars" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
+  if (!"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
     stop(
       "Function not properly specified."
     )
@@ -99,7 +99,7 @@ lRecrPars <- function(lambda) {
   
   new_lRecrPars(
     # In easy Version: Use simple Poisson Distribution per iteration
-    fnRecrProc = function(lGlobVars, lAddArgs) {rpois(1, lambda = lAddArgs$lambda)},
+    fnRecrProc = function(lPltfTrial, lAddArgs) {rpois(1, lambda = lAddArgs$lambda)},
     lAddArgs   = list(lambda = lambda)
   )
 
@@ -131,7 +131,7 @@ plot.lRecrPars <- function(x, dCurrTime = 1:52, dActvIntr = rep(1, 52), ...) {
   for (i in 1:length(dCurrTime)) {
     
     # Get the i-th elements of the global variable list vectors and define these as current global variables
-    lGlobVars <- structure(list(lVars = lapply(lInpArgs, FUN = function(x) x[[i]])), class = "lGlobVars")
+    lPltfTrial <- structure(list(lSnap = lapply(lInpArgs, FUN = function(x) x[[i]])), class = "lPltfTrial")
     
     y[i] <- 
       round(
@@ -139,7 +139,7 @@ plot.lRecrPars <- function(x, dCurrTime = 1:52, dActvIntr = rep(1, 52), ...) {
           f, 
           args = list(
             lAddArgs  = x$lAddArgs, 
-            lGlobVars = lGlobVars
+            lPltfTrial = lPltfTrial
           )
         )
       )

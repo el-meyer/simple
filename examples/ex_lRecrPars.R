@@ -14,8 +14,8 @@ summary(x)
 # Enrollment where every 7th time unit more patients enter
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-      if(lGlobVars$lVars$dCurrTime %% 7 == 0) {
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+      if(lPltfTrial$lSnap$dCurrTime %% 7 == 0) {
         rpois(1, lambda = lAddArgs$lambda2)
       } else {
         rpois(1, lambda = lAddArgs$lambda1)
@@ -30,8 +30,8 @@ summary(x)
 # exponential enrollment that is capped
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-        min(lAddArgs$growth ^ lGlobVars$lVars$dCurrTime, lAddArgs$cap)
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+        min(lAddArgs$growth ^ lPltfTrial$lSnap$dCurrTime, lAddArgs$cap)
     },
     lAddArgs   = list(growth = 1.5, cap = 80)
   )
@@ -49,8 +49,8 @@ summary(x)
 
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-      rpois(1, lambda = lAddArgs$lambda) * lGlobVars$lVars$dActvIntr * lAddArgs$mult
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+      rpois(1, lambda = lAddArgs$lambda) * lPltfTrial$lSnap$dActvIntr * lAddArgs$mult
     },
     lAddArgs   = list(lambda = 3, mult = 6)
   )
@@ -72,9 +72,9 @@ summary(x)
 
 x <- 
   new_lRecrPars(
-    fnRecrProc = function(lGlobVars, lAddArgs) {
-      pat <- rpois(1, lambda = lAddArgs$lambda) * lGlobVars$lVars$dActvIntr * 6
-      ifelse(lGlobVars$lVars$bEnrOpen, pat, 0)
+    fnRecrProc = function(lPltfTrial, lAddArgs) {
+      pat <- rpois(1, lambda = lAddArgs$lambda) * lPltfTrial$lSnap$dActvIntr * 6
+      ifelse(lPltfTrial$lSnap$bEnrOpen, pat, 0)
     },
     lAddArgs   = list(lambda = 4)
   )
@@ -95,3 +95,4 @@ plot(
   )
 )
 summary(x)
+

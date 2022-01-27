@@ -1,4 +1,4 @@
-
+w
 # Tests to see whether lIntrIncl works as intended
 
 # Initialize lIntrIncl and plot
@@ -16,9 +16,9 @@ plot(x)
 # Dont replace outgoing but add an arm every 4 steps
 x <- 
   new_lIntrIncl(
-    fnIntrIncl  = function(lGlobVars, lAddArgs) {
+    fnIntrIncl  = function(lPltfTrial, lAddArgs) {
       # if it has been 4 time units since last inclusion, add one ISA
-      if (lGlobVars$lVars$dCurrTime == max(lGlobVars$lVars$vIntrInclTimes) + lAddArgs$dTimeDiff) {
+      if (lPltfTrial$lSnap$dCurrTime == max(lPltfTrial$lSnap$vIntrInclTimes) + lAddArgs$dTimeDiff) {
         dAdd <- 1
       } else {
         dAdd <- 0
@@ -35,10 +35,10 @@ summary(x)
 
 x <- 
   new_lIntrIncl(
-    fnIntrIncl  = function(lGlobVars, lAddArgs) {
+    fnIntrIncl  = function(lPltfTrial, lAddArgs) {
       # if it has been 4 time units since last inclusion, add one ISA
-      if (lGlobVars$lVars$dActvIntr < lAddArgs$dIntrMax) {
-        dAdd <- min(rbinom(1, 3, 0.4), lAddArgs$dIntrMax - lGlobVars$lVars$dActvIntr)
+      if (lPltfTrial$lSnap$dActvIntr < lAddArgs$dIntrMax) {
+        dAdd <- min(rbinom(1, 3, 0.4), lAddArgs$dIntrMax - lPltfTrial$lSnap$dActvIntr)
       } else {
         dAdd <- 0
       }
@@ -54,10 +54,10 @@ summary(x)
 
 x <- 
   new_lIntrIncl(
-    fnIntrIncl  = function(lGlobVars, lAddArgs) {
+    fnIntrIncl  = function(lPltfTrial, lAddArgs) {
       # if it has been 4 time units since last inclusion, add one ISA
-      if (lGlobVars$lVars$dActvIntr < lAddArgs$dIntrMax & lGlobVars$lVars$bInclAllowed) {
-        dAdd <- min(rbinom(1, 3, 0.4), lAddArgs$dIntrMax - lGlobVars$lVars$dActvIntr)
+      if (lPltfTrial$lSnap$dActvIntr < lAddArgs$dIntrMax & lPltfTrial$lSnap$bInclAllowed) {
+        dAdd <- min(rbinom(1, 3, 0.4), lAddArgs$dIntrMax - lPltfTrial$lSnap$dActvIntr)
       } else {
         dAdd <- 0
       }
@@ -70,3 +70,4 @@ plot(
   bInclAllowed = c(rep(TRUE, 15), rep(FALSE, 15), rep(TRUE, 22))
 )
 summary(x)
+

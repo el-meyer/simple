@@ -10,7 +10,7 @@
 #' x <- lIntrIncl(4)
 #' validate_lIntrIncl(x)
 #' plot(x)
-#' summary(x)d
+#' summary(x)
 #' 
 #' @name lIntrIncl
 #' 
@@ -20,7 +20,7 @@
 new_lIntrIncl <- 
   function(
     fnIntrIncl = function(
-      lGlobVars,
+      lPltfTrial,
       lAddArgs
     ) {},
     lAddArgs        = list()
@@ -71,7 +71,7 @@ validate_lIntrIncl <- function(x) {
   
   # Check input parameters of function
   if (
-    !"lGlobVars" %in% names(f_args) |
+    !"lPltfTrial" %in% names(f_args) |
     !"lAddArgs" %in% names(f_args)
   ) {
     stop(
@@ -96,12 +96,12 @@ lIntrIncl <- function(dMaxIntr) {
   # Replace outgoing ISAs only
   # Maximum x ISAs in total
   new_lIntrIncl(
-    fnIntrIncl  = function(lGlobVars, lAddArgs) {
+    fnIntrIncl  = function(lPltfTrial, lAddArgs) {
       # if both an ISA was outgoing in this time step and the maximum number has not yet been reached
       # add as many ISAs as were outgoing
-      if (lGlobVars$lVars$dExitIntr > 0 & length(lGlobVars$lVars$vIntrInclTimes) < lAddArgs$dMaxIntr) {
+      if (lPltfTrial$lSnap$dExitIntr > 0 & length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$dMaxIntr) {
         # add as many as were outgoing but maximum as many as can still be added
-        dAdd <- min(lAddArgs$dMaxIntr - length(lGlobVars$lVars$vIntrInclTimes), lGlobVars$lVars$dExitIntr)
+        dAdd <- min(lAddArgs$dMaxIntr - length(lPltfTrial$lSnap$vIntrInclTimes), lPltfTrial$lSnap$dExitIntr)
       } else {
         dAdd <- 0
       }
@@ -171,9 +171,9 @@ plot.lIntrIncl <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_par
     # Add the ISA exit times to vector
     vIntrExitTimes <- c(vIntrExitTimes, rep(i, dExitIntr))
     
-    lGlobVars <- structure(
+    lPltfTrial <- structure(
       list(
-        lVars = c(
+        lSnap = c(
           lapply(lInpArgs, FUN = function(x) x[[i]]), # extra global variables + current platform time
           list(
             dActvIntr      = dActvIntr, # number of ISAs active at beginning of current platform time
@@ -183,7 +183,7 @@ plot.lIntrIncl <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_par
           )
         )
       ), 
-      class = "lGlobVars"
+      class = "lPltfTrial"
     )
     
     # call function to determine how many new ISAs to include
@@ -192,7 +192,7 @@ plot.lIntrIncl <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_par
         do.call(
           f, 
           args = list(
-            lGlobVars   = lGlobVars,
+            lPltfTrial   = lPltfTrial,
             lAddArgs    = x$lAddArgs
           )
         )

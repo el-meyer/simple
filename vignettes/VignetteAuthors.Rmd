@@ -58,3 +58,30 @@ dat2 <-
     column == 1
   )
 ```
+
+
+# Misc
+
+## Rationales
+
+### Put patient baseline data in common data frame, but since outcomes might differ, put ISA specific outcomes in separate data frame for each ISA
+
+## Vanilla assumptions for simplicity:
+
+### Initial lIntrDsgn List object contains list of ISAs to be added throughout platform trial
+ i.e. there is no waiting list, no ISAs enter of leave the candidate list, etc. 
+ Later: Model ISA waiting list separately 
+
+### ISAs open, then run, and then close. No re-opening.
+
+### Between ISA allocation ratio is stored in the treatment dataset in a separate column
+
+### List of snapshots is always created (especially when running OC function, this should be optional or off by default)
+
+### Randomization is strictly two-stage
+
+### All patients are eligible for all ISAs and Arms
+
+### No drift in patient baseline parameters
+
+### Patients arrive in blocks (per week) -> sample sizes not exactly reachable

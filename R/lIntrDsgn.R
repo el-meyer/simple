@@ -12,10 +12,11 @@
 #' @rdname lIntrDsgn
 # Constructor Function
 new_lIntrDsgn <- function(
-  
+  ...
 ) {
   structure(
     list(
+      ...
     ),
     class       = "lIntrDsgn"
   )
@@ -28,11 +29,16 @@ validate_lIntrDsgn <- function(x) {
 }
 #' @export
 #' @rdname lIntrDsgn
-# Helper Function
-lIntrDsgn <- function() {
+# Helper Function creates ISAs with binary endpoints
+lIntrDsgn <- function(
+  name,
+  lTrtEffect,
+  
+) {
   
   new_lIntrDsgn(
-    
+    name,
+    lTrtEffect
   )
   
 }
