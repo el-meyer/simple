@@ -84,4 +84,12 @@ dat2 <-
 
 ### No drift in patient baseline parameters
 
-### Patients arrive in blocks (per week) -> sample sizes not exactly reachable
+### Patients arrive in blocks (per week) and not continuously -> sample sizes not exactly reachable (no checking is done mid-allocation)
+
+### No re-randomization
+
+### No outcomes simulated later than at arrival
+
+### For now, simple patient allocation and no block randomization etc. (later have maybe lists of randomizations)
+
+### For now, patients that cannot be allocated to any ISA are just lost (and not saved anywhere other than in lSnapshots)

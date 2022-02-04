@@ -26,19 +26,19 @@ runSingleTrialSim <-
     lSnapshots <- list()
     
     # Initially, platform trial is open 
-    bTrialOpen <- TRUE
+    bTrialClose <- FALSE
     
     # What happens every time unit of the platform trial?
-    while (bTrialOpen) {
+    while (!bTrialClose) {
       
-      # Handle ISA inclusion 
+      # Update snapshot
       assign(
         "lPltfTrial",
         do.call(
-          match.fun(lPltfDsgn$lFnDef$fnAddNewIntr),
+          match.fun(lPltfDsgn$lSnap$fnSnap),
           args = list(
-            lPltfDsgn  = lPltfDsgn,
-            lPltfTrial = lPltfTrial
+            lPltfTrial = lPltfTrial,
+            lAddArgs   = lPltfDsgn$lSnap$lAddArgs
           )
         )
       )
@@ -82,9 +82,9 @@ runSingleTrialSim <-
       # Check whether platform trial is still open, using
       # the rules specified in fnCheckTrialOpen
       assign(
-        "bTrialOpen",
+        "bTrialClose",
         do.call(
-          match.fun(lPltfDsgn$lFnDef$fnCheckTrialOpen),
+          match.fun(lPltfDsgn$lFnDef$fnCheckTrialClose),
           args = list(
             lPltfDsgn  = lPltfDsgn,
             lPltfTrial = lPltfTrial
@@ -92,13 +92,27 @@ runSingleTrialSim <-
         )
       )
       
-      # Update the time ("the week is over")
-      # Think about more general "update snapshot" module?
-      lPltfTrial$lSnap$dCurrTime <- lPltfTrial$lSnap$dCurrTime + 1
+      if (!bTrialClose) {
+        # Handle ISA inclusion if platform did not stop
+        assign(
+          "lPltfTrial",
+          do.call(
+            match.fun(lPltfDsgn$lFnDef$fnAddNewIntr),
+            args = list(
+              lPltfDsgn  = lPltfDsgn,
+              lPltfTrial = lPltfTrial
+            )
+          )
+        )
+        
+        # Update the time ("the week is over")
+        # Think about more general "update snapshot" module?
+        lPltfTrial$lSnap$dCurrTime <- lPltfTrial$lSnap$dCurrTime + 1
+        
+      }
       
-      # LATER: Put the following in some sort of clean up step
       # Store current snapshot outside of lPltfTrial
-      lSnapshots <- c(lSnapshots, lPltfTrial$lSnap)
+      lSnapshots <- c(lSnapshots, list(lPltfTrial$lSnap))
       
     }
     
@@ -111,15 +125,14 @@ runSingleTrialSim <-
         match.fun(lPltfDsgn$lFnDef$fnWrapup),
         args = list(
           lPltfDsgn  = lPltfDsgn,
-          lPltfTrial = lPltfTrial,
-          lSnapshots = lSnapshots
+          lPltfTrial = lPltfTrial
         )
       )
     )
     
     return(
       list(
-        out = ret,
+        out   = ret,
         snaps = lSnapshots
       )
     )

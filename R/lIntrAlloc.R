@@ -22,7 +22,7 @@ new_lIntrAlloc <- function(
 ) {
   structure(
     list(
-      fnIntrAlloc = fnIntrAlloc,
+      fnIntrAlloc  = fnIntrAlloc,
       lAddArgs    = lAddArgs
     ),
     class         = "lIntrAlloc"
@@ -39,13 +39,30 @@ validate_lIntrAlloc <- function(x) {
 # Helper Function
 lIntrAlloc <- function() {
   
-  # By default, balances allocation ratio between ISAs
+  # By default, just randomize according to weights in lPltfTrial$isa
   new_lIntrAlloc(
     fnIntrAlloc = function(lPltfTrial, lAddArgs) {
-
-      # give all "active" cohorts a "1" and all others "0"
-      lPltfTrial$treatments$alloc[lPltfTrial$treatments$active] <- 1
-      lPltfTrial$treatments$alloc[!lPltfTrial$treatments$active] <- 0
+      
+      # contains numbers (including 0)
+      alloc_ratio <- sapply(lPltfTrial$isa, function(x) x$dAlloc)
+      
+      # What to do if all dAlloc == 0?
+      if (all(alloc_ratio == 0)) {
+        
+        print("Patients were not allocated to ISAs due to no valid allocation ratios.")
+        
+      } else {
+        
+        # Assign ID not Name (for sure unique)
+        lPltfTrial$lSnap$newdat_df$ISA <- 
+          sample(
+            x        = sapply(lPltfTrial$isa, function(x) x$nID), 
+            size     = nrow(lPltfTrial$lSnap$newdat_df),
+            replace  = TRUE, 
+            prob     = alloc_ratio/sum(alloc_ratio)
+          )
+        
+      }
       
       return(lPltfTrial)
       

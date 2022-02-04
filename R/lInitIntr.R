@@ -1,9 +1,9 @@
-#' Initialization of ISAs Dataset
+#' Initialization of ISA
 #' 
 #' Functions for creating, validating and simple use of class lInitIntr
 #' 
-#' @param fnInitTrt    Function which will initiate the dataframe of ISAs
-#' @param lAddArgs     Further arguments used in fnInitTrt
+#' @param fnInitIntr    Function which will initiate the ISA
+#' @param lAddArgs  Further arguments used in fnInitIntr
 #' 
 #' @examples
 #' 
@@ -13,20 +13,20 @@
 #' @rdname lInitIntr
 # Constructor Function
 new_lInitIntr <- function(
-  # Function that is used in initializing of ISA data frame
-  fnInitTrt = function(
-    lPltfDsgn, # List of platform design parameters
-    lAddArgs    # List of further arguments for this module
-    ) {}, 
-  # List of Arguments used with fnInitTrt function
+  # Function that is used in initializing of ISA
+  fnInitIntr = function(
+    lPltfTrial,  # List of current platform trial status
+    lAddArgs     # List of further arguments for this module
+  ) {}, 
+  # List of Arguments used with fnInitIntr function
   lAddArgs = list()
-  ) {
+) {
   structure(
     list(
-      fnInitTrt  = fnInitTrt,
-      lAddArgs   = lAddArgs
-     ),
-    class        = "lInitIntr"
+      fnInitIntr     = fnInitIntr,
+      lAddArgs       = lAddArgs
+    ),
+    class            = "lInitIntr"
   )
 }
 #' @export
@@ -38,37 +38,41 @@ validate_lInitIntr <- function(x) {
 #' @export
 #' @rdname lInitIntr
 # Helper Function
-lInitIntr <- function(nTrt) {
+lInitIntr <- function(name) {
   
   new_lInitIntr(
-    # In easy Version: Simple start with nTrt ISAs and balanced allocation ratio
+    # In easy Version: Simple start with balanced allocation ratio
     
-    fnInitTrt = function(lPltfDsgn, lAddArgs) {
-    
-    isas <- list()
-    
-    for (i in 1:nTrt) {
-      
-      isas[[i]] <- 
-        list(
-          id           = i, # assign IDs accoring to how many ISAs start
-          name         = lPltfDsgn$lIntrDsgn[[i]]$name, # get the first names
-          n_cur        = 0, # Current sample size allocated to this ISA
-          enrol        = TRUE, # is ISA currently enrolling
-          alloc        = 1, # allocation ratio relative to other ISAs
-          start_time   = 0, # at what calendar time was ISA started
-          nAnalysis    = 0, # number of analyses conducted for this ISA
-          end_time     = NA, # at what calendar time was ISA stopped
-          end_reason   = NA # reason why ISA was stopped
-        )
-      
-    }
-      
-      return(isas)
+    fnInitIntr = function(lPltfTrial, lAddArgs) {
+        
+      list(
+        # assign ID depending on how many ISAs are already in platform
+        nID          = length(lPltfTrial$isa) + 1, 
+        # get the name
+        cName        = lAddArgs$name, 
+        # Current sample size allocated to this ISA
+        nPats        = 0, 
+        # is ISA currently enrolling
+        bEnrol       = TRUE, 
+        # allocation ratio relative to other ISAs
+        dAlloc       = 1, 
+        # at what calendar time was ISA started
+        nStartTime   = lPltfTrial$lSnap$dCurrTime, 
+        # number of analyses conducted for this ISA
+        nAnalysis    = 0, 
+        # at what calendar time was ISA stopped
+        nEndTime     = NA, 
+        # reason why ISA was stopped
+        cEndReason   = NA,
+        # List of conducted analyses
+        lAnalyses    = list(),
+        # List of patients in this ISA
+        lPats        = list()
+      )
       
     },
     
-    lAddArgs   = list(nTrt = nTrt)
+    lAddArgs   = list(name = name)
   )
-
+  
 }

@@ -27,17 +27,28 @@ new_lFnDef <- function(
     lPltfDsgn,
     lPltfTrial
   ) {},
-  fnCheckTrialOpen  = function(
+  fnIntrAction      = function(
+    lPltfDsgn,
+    lPltfTrial
+  ) {},
+  fnCheckTrialClose = function(
+    lPltfDsgn,
+    lPltfTrial
+  ) {},
+  fnWrapup = function(
     lPltfDsgn,
     lPltfTrial
   ) {}
 ) {
   structure(
     list(
-      fnInitialize     = fnInitialize,
-      fnAddNewIntr     = fnAddNewIntr,
-      fnGenNewPatData  = fnGenNewPatData,
-      fnCheckTrialOpen = fnCheckTrialOpen
+      fnInitialize      = fnInitialize,
+      fnAddNewIntr      = fnAddNewIntr,
+      fnUpdateAlloc     = fnUpdateAlloc,
+      fnGenNewPatData   = fnGenNewPatData,
+      fnIntrAction      = fnIntrAction,
+      fnCheckTrialClose = fnCheckTrialClose,
+      fnWrapup          = fnWrapup
     ),
     class       = "lFnDef"
   )
@@ -60,48 +71,22 @@ lFnDef <- function() {
         lPltfDsgn
       ) {
         
-        # Initialize dataset of isa using the appropriate function
+      # Initialize empty list objects and set time to 0
+      lPltfTrial <- list()
+      lPltfTrial$lSnap$dCurrTime <- 0
+      
+        # Add new ISAs according to how many should start
         assign(
-          "isa",
+          "lPltfTrial",
           do.call(
-            match.fun(lPltfDsgn$lInitIntr$fnInitTrt),
+            match.fun(lPltfDsgn$lAddIntr$fnAddIntr),
             args = list(
               lPltfDsgn  = lPltfDsgn,
-              lAddArgs   = lPltfDsgn$lInitIntr$lAddArgs
+              lPltfTrial = lPltfTrial,
+              lAddArgs   = lPltfDsgn$lAddIntr$lAddArgs
             )
           )
         )
-        
-        # initiate patient data set
-        assign(
-          "patients",
-          do.call(
-            match.fun(lPltfDsgn$lInitPat$fnInitPat),
-            args = list(
-              lPltfDsgn  = lPltfDsgn,
-              lAddArgs   = lPltfDsgn$lInitPat$lAddArgs
-            )
-          )
-        )
-        
-        # create initial "snapshot"
-        snap <- 
-          list(
-            dCurrTime       = 0, # current time
-            dActvIntr       = length(isa), # current number of active cohorts (== enrolling)
-            dExitIntr       = 0, # number of outgoing ISAs at this time point
-            vIntrInclTimes  = rep(0, length(isa)), # vector of all ISA inclusion times so far
-            vIntrExitTimes  = rep(NA, length(isa)), # vector of all ISA exit times so far
-            vCurrAllocRatio = isa$overview$alloc, # Vector of current allocation ratio between ISAs
-            nAnalysisOver   = 0 # Overall number of analyses already conducted
-          )
-        
-        lPltfTrial <- 
-          list(
-            isa       = isa,
-            patients  = patients,
-            lSnap     = snap
-          )
         
         return(
           lPltfTrial
@@ -129,10 +114,10 @@ lFnDef <- function() {
         nNewIntr <- 
           min(
             do.call(
-              match.fun(lPltfDsgn$lIntrIncl$fnIntrIncl), 
+              match.fun(lPltfDsgn$lNewIntr$fnNewIntr), 
               args = list(
                 lPltfTrial   = lPltfTrial,
-                lAddArgs     = lPltfDsgn$lIntrIncl$lAddArgs
+                lAddArgs     = lPltfDsgn$lNewIntr$lAddArgs
               )
             ),
             nIntrLeft
@@ -142,32 +127,16 @@ lFnDef <- function() {
         # For now: Just add treatment in treatment data frame and make a new list
         if (nNewIntr > 0) {
           
-          isas_new <- list()
-          for (i in 1:nNewIntr) {
-            
-            isas_new[[i]] <- 
-              list(
-                id           = length(isa) + i, # assign IDs accoring to how many ISAs start
-                name         = lPltfDsgn$lIntrDsgn[[length(isa) + i]]$name, # get the first names
-                n_cur        = 0, # Current sample size allocated to this ISA
-                enrol        = TRUE, # is ISA currently enrolling
-                alloc        = 1, # allocation ratio relative to other ISAs
-                start_time   = lPltfTrial$lSnap$dCurrTime, # at what calendar time was ISA started
-                nAnalysis    = 0, # number of analyses conducted for this ISA
-                end_time     = NA, # at what calendar time was ISA stopped
-                end_reason   = NA # reason why ISA was stopped
+          lPltfTrial <-
+            do.call(
+              match.fun(lPltfDsgn$lAddIntr$fnAddIntr),
+              args = list(
+                lPltfDsgn  = lPltfDsgn,
+                lPltfTrial = lPltfTrial,
+                lAddArgs   = list(nTrt = nNewIntr)
               )
-            
-          }
-          
-          isa <- 
-            c(
-              isa,
-              isas_new
             )
-
         }
-        
       }
       
       # Return modified list object
@@ -176,7 +145,7 @@ lFnDef <- function() {
     },
     
     
-    # Update between ISA and within ISA Allocation Ratio
+    # Update between ISA Allocation Ratio
     fnUpdateAlloc = function(
       lPltfDsgn, 
       lPltfTrial
@@ -185,10 +154,10 @@ lFnDef <- function() {
       # Update between ISA allocation ratio: Apply function from lIntrAlloc
       lPltfTrial <- 
         do.call(
-          match.fun(lPltfDsgn$lIntrAlloc$fnIntrAlloc), 
+          match.fun(lPltfDsgn$lUpdIntrAlloc$fnUpdIntrAlloc), 
           args = list(
             lPltfTrial   = lPltfTrial,
-            lAddArgs     = lPltfDsgn$lIntrAlloc$lAddArgs
+            lAddArgs     = lPltfDsgn$lUpdIntrAlloc$lAddArgs
           )
         )
 
@@ -219,7 +188,7 @@ lFnDef <- function() {
       # Programmed initially via list so we do not need to know how 
       # many columns and their names
 
-      newdat_list <- list()
+      newdat <- list()
       
       for (i in 1:nNewPats) {
         newdat[[i]] <- 
@@ -232,36 +201,61 @@ lFnDef <- function() {
           )
       }
       
-      newdat_df <- do.call(rbind.data.frame, newdat)
+      # Add new patients to lSnap
+      lPltfTrial$lSnap$newdat_df <- do.call(rbind.data.frame, newdat)
       
+      # Assign patients to ISAs
+      lPltfTrial <-
+        do.call(
+          match.fun(lPltfDsgn$lIntrAlloc$fnIntrAlloc), 
+          args = list(
+            lPltfTrial   = lPltfTrial,
+            lAddArgs     = lPltfDsgn$lIntrAlloc$lAddArgs
+          )
+        )
       
-      # Assign patients to ISAs and within ISAs
-      
+      # Append to data frames in ISAs
+      # Necessary because structure of assignment to arms and
+      # outcome simulation can differ in ISAs and result in 
+      # different numbers of columns
+      lPltfTrial <-
+        do.call(
+          match.fun(lPltfDsgn$lAddPats$fnAddPats), 
+          args = list(
+            lPltfTrial   = lPltfTrial,
+            lAddArgs     = lPltfDsgn$lAddPats$lAddArgs
+          )
+        )
+        
+      # Assign patients within ISAs
+        
       # Simulate the patients' outcomes
-      # Those dataframes are stored separately
       
-      # Append to data frame
+      return(lPltfTrial)
       
     },
     
-    # Steps that should be performed for each ISA
+    # # Steps that should be performed for each ISA
     fnIntrAction = function(
       lPltfDsgn,
       lPltfTrial
     ) {
+    #   
+    #   # Check Analysis Milestone
+    #   
+    #   # Run Analyses if necessary
+    #   
+    #   # Implement possible decisions
+    #   
+    #   # Check whether ISA is still actively enrolling
+    
+      # For now, do nothing
+      return(lPltfTrial)
       
-      # Check Analysis Milestone
-      
-      # Run Analyses if necessary
-      
-      # Implement possible decisions
-      
-      # Check whether ISA is still actively enrolling
-      
-    },
+      },
     
     # Check if platform should be closed
-    fnCheckTrialOpen = function(
+    fnCheckTrialClose = function(
       lPltfDsgn,
       lPltfTrial
     ) {
@@ -269,7 +263,7 @@ lFnDef <- function() {
       # at the moment, just look at module that checks if stopping rules are reached and 
       # return logical
       
-      bTrialOpen <- 
+      bTrialClose <- 
         do.call(
           match.fun(lPltfDsgn$lStopRule$fnStopRule), 
           args = list(
@@ -278,7 +272,17 @@ lFnDef <- function() {
           )
         )
       
-      return(bTrialOpen)  
+      return(bTrialClose)  
+    },
+    
+    # Create return Object
+    fnWrapup = function(
+      lPltfDsgn,
+      lPltfTrial
+    ) {
+      
+      # at the moment, just return lPltfTrial
+      lPltfTrial$isa
     }
     
     

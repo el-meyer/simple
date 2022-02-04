@@ -2,72 +2,76 @@
 #' 
 #' List of snapshot variables to be extracted in simulations and passed to different methods
 #' 
-#' @param lVars           List of variables
+#' @param fnAddIntr    Function which will add ISAs
+#' @param lAddArgs     Further arguments used in fnAddIntr
 #' 
 #' @examples
-#' 
-#' x <- 
-#'   lSnap(
-#'     dCurrTime      = 10, # current platform time
-#'     dActvIntr      = 2, # number of ISAs active at beginning of current platform time
-#'     dExitIntr      = 1, # number of outgoing ISAs at current platform time
-#'     vIntrInclTimes = c(1, 9), # vector of all ISA inclusion times so far
-#'     vIntrExitTimes = c(10) # vector of all ISA exit times so far
-#'    )
-#' validate_lSnap(x)
-#' summary(x)
 #' 
 #' @name lSnap
 #' 
 #' @export
 #' @rdname lSnap
 # Constructor Function
-new_lSnap <- 
-  function(
-    ...
+new_lSnap <-  function(
+  fnSnap = function(
+    lPltfTrial, # List of current platform trial progress
+    lAddArgs    # List of further arguments for this module
+  ) {}, 
+  # List of Arguments used with fnSnap function
+  lAddArgs = list()
   ) {
     structure(
       list(
-        ...
+        fnSnap    = fnSnap,
+        lAddArgs  = lAddArgs
       ),
       class       = "lSnap"
     )
-  }
+}
 #' @export
 #' @rdname lSnap
 # Validator Function
 validate_lSnap <- function(x) {
   
-  # Error if not a list
-  if (!is.list(x)) {
-    stop(
-      "Element is not a list."
-    )
-  }
-  
 }
 #' @export
 #' @rdname lSnap
 # Helper Function
-lSnap <- 
-  function(...) {
+lSnap <- function() {
   
-  # Default list of global variables
-    structure(
-      list(
-        ...
-      ),
-      class       = "lSnap"
-    )
-  
-}
-
-#' @export
-#' @rdname lSnap
-# Summary Function
-summary.lSnap <- function(x, ...) {
-  
-  cat("\n Specified snapshot variables: \n")
-  print(x, ...)
+  new_lSnap(
+    # In easy Version: Summarize lPltfTrial in a certain way
+    fnSnap = function(lPltfTrial, lAddArgs) {
+      
+      lPltfTrial$lSnap <- 
+        list(
+          # current time
+          dCurrTime       = lPltfTrial$lSnap$dCurrTime, 
+          # current number of active cohorts (== enrolling)
+          dActvIntr       = sum(sapply(lPltfTrial$isa, function(x) x$bEnrol)), 
+          # number of outgoing ISAs at this time point
+          dExitIntr       = 
+            sum(
+              sapply(
+                lPltfTrial$isa, 
+                function(x) x$nEndTime == lPltfTrial$lSnap$dCurrTime
+              ),
+              na.rm = TRUE
+            ),
+          # vector of all ISA inclusion times so far
+          vIntrInclTimes  = sapply(lPltfTrial$isa, function(x) x$nStartTime), 
+          # vector of all ISA exit times so far
+          vIntrExitTimes  = sapply(lPltfTrial$isa, function(x) x$nEndTime),
+          # Vector of current allocation ratio between ISAs
+          vCurrAllocRatio = sapply(lPltfTrial$isa, function(x) x$dAlloc), 
+          # Overall number of analyses already conducted
+          nAnalysisOver   = sum(sapply(lPltfTrial$isa, function(x) length(x$lAnalyses)), na.rm = TRUE) 
+        )
+      
+      return(lPltfTrial)
+      
+    },
+    lAddArgs   = list()
+  )
   
 }

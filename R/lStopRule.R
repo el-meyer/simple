@@ -41,9 +41,12 @@ validate_lStopRule <- function(x) {
 lStopRule <- function() {
   
   new_lStopRule(
-    # In easy Version: Stop platform, if all treatments have final decision!!
+    # # In easy Version: Stop platform, if all treatments have final decision!!
+    # fnStopRule = function(lPltfTrial, lAddArgs) {
+    #   all(!is.na(sapply(lPltfTrial$isa, function(x) x$cEndReason)))
+    # Stop After 50 weeks
     fnStopRule = function(lPltfTrial, lAddArgs) {
-      #XXX
+      lPltfTrial$lSnap$dCurrTime >= 50
     },
     lAddArgs   = list()
   )
