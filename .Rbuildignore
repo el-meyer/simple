@@ -6,4 +6,10 @@
 ^docs$
 ^pkgdown$
 ^README\.Rmd$
-^LICENSE
+^LICENCE
+^OldFunctions$
+^vignettes$
+^tests$
+^examples$
+^bootcamp$
+^LICENSE\.md$
