@@ -74,8 +74,6 @@ dat2 <-
 
 ### ISAs open, then run, and then close. No re-opening.
 
-### Between ISA allocation ratio is stored in the treatment dataset in a separate column
-
 ### List of snapshots is always created (especially when running OC function, this should be optional or off by default)
 
 ### Randomization is strictly two-stage
@@ -90,6 +88,10 @@ dat2 <-
 
 ### No outcomes simulated later than at arrival
 
-### For now, simple patient allocation and no block randomization etc. (later have maybe lists of randomizations)
+### Between ISA allocation is always done randomly using a vector of weights, i.e. no randomization list
 
 ### For now, patients that cannot be allocated to any ISA are just lost (and not saved anywhere other than in lSnapshots)
+
+### When checking for Analysis Milestones, the earlier milestones NEED to also be reached when later milestones are reached, e.g. n < n_target or time < t_target
+
+### As soon as enrollment stopps, new ISAs can enter

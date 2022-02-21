@@ -1,12 +1,35 @@
 Package: simple
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: SIMulating PLatform trials Efficiently
+Version: 0.1
 Authors@R: 
+    c(
     person(given = "Elias Laurin",
            family = "Meyer",
            role = c("aut", "cre"),
-           email = "elias.meyer@meduniwien.ac.at")
-Description: What the package does (one paragraph).
+           email = "elias.meyer@meduniwien.ac.at"),
+    person(given = "Franz",
+           family = "Koenig",
+           role = c("ctb")),
+    person(given = "Tobias",
+           family = "Mielke",
+           role = c("ctb")),
+    person(given = "Tom",
+           family = "Parke",
+           role = c("ctb")),
+    person(given = "Peter",
+           family = "Jacko",
+           role = c("ctb")),
+    person(given = "Peter",
+           family = "Mesenbrink",
+           role = c("ctb")),
+    person(given = "Constantin",
+           family = "Kumaus",
+           role = c("ctb")),
+    person(given = "Dariga",
+           family = "Ramazanova",
+           role = c("ctb"))
+    )
+Description: A modular software approach for simulating platform trials. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

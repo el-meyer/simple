@@ -42,7 +42,52 @@ lAllocArm <- function() {
   new_lAllocArm(
     fnAllocArm = function(lPltfTrial, lAddArgs) {
       
-      # It is expected that in lAddArgs we will find the current ID
+      # It is expected that in lAddArgs we will find the current ID under "current_id"
+      
+      # By default just use values from isa$vRandList
+      
+      # What to do if not enough pre-randomizations?
+      if (
+        nrow(lPltfTrial$isa[[lAddArgs$current_id]]$tempPats) > 
+        length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)
+        ) {
+        
+        # Assign Arm Names from vRandList
+        lPltfTrial$isa[[lAddArgs$current_id]]$tempPats$Arm <- 
+          c(
+            lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[1:length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)],
+            rep(
+              "NA", 
+              nrow(lPltfTrial$isa[[lAddArgs$current_id]]$tempPats) - 
+                length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)
+            )
+          )
+        
+        # Remove randomizations from vRandList
+        lPltfTrial$isa[[lAddArgs$current_id]]$vRandList <- 
+          lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[-(1:length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList))]
+        
+        print(
+          paste0(
+            "Not all or no patients were allocated within ISA ", 
+            lAddArgs$current_id,
+            " at time ",
+            lPltfTrial$lSnap$dCurrTime,
+            " because randomization list is empty (e.g. maximum sample size reached)."
+          )
+        )
+        
+      } else {
+        
+        # Assign Arm Names from vRandList
+        lPltfTrial$isa[[lAddArgs$current_id]]$tempPats$Arm <- 
+          lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[1:nrow(lPltfTrial$isa[[lAddArgs$current_id]]$tempPats)]
+       
+        # Remove randomizations from vRandList
+        lPltfTrial$isa[[lAddArgs$current_id]]$vRandList <- 
+          lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[-(1:nrow(lPltfTrial$isa[[lAddArgs$current_id]]$tempPats))]
+         
+      }
       
       return(lPltfTrial)
       

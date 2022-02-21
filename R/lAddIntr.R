@@ -54,15 +54,25 @@ lAddIntr <- function(nTrt) {
             lPltfTrial$isa,
             list(
               do.call(
-                match.fun(lPltfDsgn$lIntrDsgn[[length(lPltfTrial$isa) + i]]$lInitIntr$fnInitIntr),
+                match.fun(lPltfDsgn$lIntrDsgn[[length(lPltfTrial$isa) + 1]]$lInitIntr$fnInitIntr),
                 args = 
                   list(
                     lPltfTrial = lPltfTrial,
-                    lAddArgs   = lPltfDsgn$lIntrDsgn[[length(lPltfTrial$isa) + i]]$lInitIntr$lAddArgs
+                    lAddArgs   = lPltfDsgn$lIntrDsgn[[length(lPltfTrial$isa) + 1]]$lInitIntr$lAddArgs
                   )
               )
             )
           )
+        
+        print(
+          paste0(
+            "ISA ",
+            length(lPltfTrial$isa),
+            " was added to the trial at time ",
+            lPltfTrial$lSnap$dCurrTime
+          )
+        )
+        
       }
       
       # Return modified object

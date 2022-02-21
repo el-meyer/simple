@@ -119,6 +119,18 @@ runSingleTrialSim <-
     # Finally, create return object from platform trial object as specified
     # in fnWrapup
     
+    # Update snapshot
+    assign(
+      "lPltfTrial",
+      do.call(
+        match.fun(lPltfDsgn$lSnap$fnSnap),
+        args = list(
+          lPltfTrial = lPltfTrial,
+          lAddArgs   = lPltfDsgn$lSnap$lAddArgs
+        )
+      )
+    )
+    
     assign(
       "ret",
       do.call(

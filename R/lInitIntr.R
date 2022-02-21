@@ -38,41 +38,72 @@ validate_lInitIntr <- function(x) {
 #' @export
 #' @rdname lInitIntr
 # Helper Function
-lInitIntr <- function(name) {
+# By default balanced allocation within ISA 
+lInitIntr <- function(
+  cIntrName = "I_NoName", 
+  cArmNames = c("ArmNoName"),
+  nMaxNIntr = 100,
+  vRandList = 
+    as.vector(
+      replicate(
+        n    = ceiling(nMaxNIntr / length(cArmNames)),
+        expr = sample(cArmNames)
+      )
+    ),
+  vMaxNArms = rep(ceiling(nMaxNIntr / length(cArmNames)), length(cArmNames))
+  ) {
   
   new_lInitIntr(
-    # In easy Version: Simple start with balanced allocation ratio
     
     fnInitIntr = function(lPltfTrial, lAddArgs) {
         
-      list(
-        # assign ID depending on how many ISAs are already in platform
-        nID          = length(lPltfTrial$isa) + 1, 
-        # get the name
-        cName        = lAddArgs$name, 
-        # Current sample size allocated to this ISA
-        nPats        = 0, 
-        # is ISA currently enrolling
-        bEnrol       = TRUE, 
-        # allocation ratio relative to other ISAs
-        dAlloc       = 1, 
-        # at what calendar time was ISA started
-        nStartTime   = lPltfTrial$lSnap$dCurrTime, 
-        # number of analyses conducted for this ISA
-        nAnalysis    = 0, 
-        # at what calendar time was ISA stopped
-        nEndTime     = NA, 
-        # reason why ISA was stopped
-        cEndReason   = NA,
-        # List of conducted analyses
-        lAnalyses    = list(),
-        # List of patients in this ISA
-        lPats        = list()
-      )
+      isa <- 
+        list(
+          # assign ID depending on how many ISAs are already in platform
+          nID          = length(lPltfTrial$isa) + 1, 
+          # get the ISA name
+          cIntrName    = lAddArgs$cIntrName, 
+          # get the arm names
+          cArmNames    = lAddArgs$cArmNames, 
+          # is ISA currently enrolling
+          bEnrl        = TRUE, 
+          # What is the maximum sample size of this ISA
+          nMaxNIntr    = lAddArgs$nMaxNIntr,
+          # at what calendar time was ISA started
+          nStartTime   = lPltfTrial$lSnap$dCurrTime, 
+          # at what calendar time was enrollment to ISA stoppend
+          nEndEnrlTime = Inf,
+          # at what calendar time was ISA stopped
+          nEndTime     = NA, 
+          # reason why ISA was stopped
+          cEndReason   = NA,
+          # List of Future Randomizations
+          vRandList    = lAddArgs$vRandList,
+          # List of conducted analyses
+          lAnalyses    = list(),
+          # List of patients in this ISA
+          lPats       = list(),
+          # List of arms within this ISA
+          lArms        = vector("list", length(lAddArgs$cArmNames))
+        )
+      
+      for (i in 1:length(lAddArgs$cArmNames)) {
+        isa$lArms[[i]]$cArmName <- lAddArgs$cArmNames[i]
+        isa$lArms[[i]]$bEnrl   <- TRUE
+        isa$lArms[[i]]$nMaxNArm <- lAddArgs$vMaxNArms[i]
+      }
+      
+      return(isa)
       
     },
     
-    lAddArgs   = list(name = name)
+    lAddArgs   = list(
+      cIntrName = cIntrName, 
+      cArmNames = cArmNames,
+      nMaxNIntr = nMaxNIntr,
+      vRandList = vRandList,
+      vMaxNArms = vMaxNArms
+    )
   )
   
 }

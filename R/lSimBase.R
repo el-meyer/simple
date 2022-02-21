@@ -44,7 +44,7 @@ lSimBase <-
       list("sex", "sample(0:1, n, replace = TRUE)"),
       list("time", "t")
     ),
-    names = c("Age", "Sex", "Inclusion Time")
+    names = c("Age", "Sex", "InclusionTime")
   ) {
   
   # By default, use genpat function

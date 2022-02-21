@@ -98,8 +98,8 @@ validate_lRecrPars <- function(x) {
 lRecrPars <- function(lambda) {
   
   new_lRecrPars(
-    # In easy Version: Use simple Poisson Distribution per iteration
-    fnRecrProc = function(lPltfTrial, lAddArgs) {rpois(1, lambda = lAddArgs$lambda)},
+    # In easy Version: Simply number or participants
+    fnRecrProc = function(lPltfTrial, lAddArgs) {lAddArgs$lambda},
     lAddArgs   = list(lambda = lambda)
   )
 

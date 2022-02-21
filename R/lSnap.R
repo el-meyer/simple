@@ -48,16 +48,9 @@ lSnap <- function() {
           # current time
           dCurrTime       = lPltfTrial$lSnap$dCurrTime, 
           # current number of active cohorts (== enrolling)
-          dActvIntr       = sum(sapply(lPltfTrial$isa, function(x) x$bEnrol)), 
+          dActvIntr       = sum(sapply(lPltfTrial$isa, function(x) x$bEnrl)), 
           # number of outgoing ISAs at this time point
-          dExitIntr       = 
-            sum(
-              sapply(
-                lPltfTrial$isa, 
-                function(x) x$nEndTime == lPltfTrial$lSnap$dCurrTime
-              ),
-              na.rm = TRUE
-            ),
+          dExitIntr       = 0,
           # vector of all ISA inclusion times so far
           vIntrInclTimes  = sapply(lPltfTrial$isa, function(x) x$nStartTime), 
           # vector of all ISA exit times so far

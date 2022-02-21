@@ -1,55 +1,61 @@
 #' Between ISA allocation ratio
 #' 
-#' Functions and rules for between ISA allocation ratio of class lIntrAlloc
+#' Functions and rules for between ISA allocation ratio of class lAllocIntr
 #' 
 #' @param 
 #' 
 #' @examples
 #' 
-#' @name lIntrAlloc
+#' @name lAllocIntr
 #' 
 #' @export
-#' @rdname lIntrAlloc
+#' @rdname lAllocIntr
 # Constructor Function
-new_lIntrAlloc <- function(
+new_lAllocIntr <- function(
   # Function that is used in updating between ISA allocation ratios
-  fnIntrAlloc = function(
+  fnAllocIntr = function(
     lPltfTrial, # List of current platform trial progress
     lAddArgs    # List of further arguments for this module
   ) {}, 
-  # List of Arguments used with fnIntrAlloc function
+  # List of Arguments used with fnAllocIntr function
   lAddArgs = list()
 ) {
   structure(
     list(
-      fnIntrAlloc  = fnIntrAlloc,
-      lAddArgs    = lAddArgs
+      fnAllocIntr  = fnAllocIntr,
+      lAddArgs     = lAddArgs
     ),
-    class         = "lIntrAlloc"
+    class          = "lAllocIntr"
   )
 }
 #' @export
-#' @rdname lIntrAlloc
+#' @rdname lAllocIntr
 # Validator Function
-validate_lIntrAlloc <- function(x) {
+validate_lAllocIntr <- function(x) {
   
 }
 #' @export
-#' @rdname lIntrAlloc
+#' @rdname lAllocIntr
 # Helper Function
-lIntrAlloc <- function() {
+lAllocIntr <- function() {
   
   # By default, just randomize according to weights in lPltfTrial$isa
-  new_lIntrAlloc(
-    fnIntrAlloc = function(lPltfTrial, lAddArgs) {
+  new_lAllocIntr(
+    fnAllocIntr = function(lPltfTrial, lAddArgs) {
       
       # contains numbers (including 0)
-      alloc_ratio <- sapply(lPltfTrial$isa, function(x) x$dAlloc)
+      alloc_ratio <- sapply(lPltfTrial$lSnap$isa_temp, function(x) x$dAlloc)
       
       # What to do if all dAlloc == 0?
       if (all(alloc_ratio == 0)) {
         
-        print("Patients were not allocated to ISAs due to no valid allocation ratios.")
+        print(
+          paste0(
+            "Patients were not allocated to ISAs at time ",
+            lPltfTrial$lSnap$dCurrTime,
+            " because no ISA is actively enrolling (anymore)."
+          )
+        )
         
       } else {
         

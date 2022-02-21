@@ -1,6 +1,6 @@
-#' Between ISA allocation ratio
+#' Update between ISA allocation ratio
 #' 
-#' Functions and rules for between ISA allocation ratio of class lUpdIntrAlloc
+#' Functions and rules for between ISA allocation ratio update of class lUpdIntrAlloc
 #' 
 #' @param 
 #' 
@@ -44,9 +44,9 @@ lUpdIntrAlloc <- function() {
     fnUpdIntrAlloc = function(lPltfTrial, lAddArgs) {
 
       for (i in 1:length(lPltfTrial$isa)) {
-        lPltfTrial$isa[[i]]$dAlloc <- 
+        lPltfTrial$lSnap$isa_temp[[i]]$dAlloc <- 
           ifelse(
-            lPltfTrial$isa[[i]]$bEnrol,
+            lPltfTrial$isa[[i]]$bEnrl,
             1,
             0
           )

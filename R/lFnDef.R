@@ -151,6 +151,9 @@ lFnDef <- function() {
       lPltfTrial
     ) {
       
+      # Create empty temp list in Snap
+      lPltfTrial$lSnap$isa_temp <- vector("list", length(lPltfTrial$isa))
+      
       # Update between ISA allocation ratio: Apply function from lIntrAlloc
       lPltfTrial <- 
         do.call(
@@ -187,49 +190,86 @@ lFnDef <- function() {
       # Simulate the patients' baseline variables
       # Programmed initially via list so we do not need to know how 
       # many columns and their names
-
-      newdat <- list()
       
-      for (i in 1:nNewPats) {
-        newdat[[i]] <- 
+      if (nNewPats > 0) {
+        
+        newdat <- list()
+        
+        for (i in 1:nNewPats) {
+          newdat[[i]] <- 
+            do.call(
+              match.fun(lPltfDsgn$lSimBase$fnSimBase), 
+              args = list(
+                lPltfTrial   = lPltfTrial,
+                lAddArgs     = lPltfDsgn$lSimBase$lAddArgs
+              )
+            )
+        }
+        
+        # Add new patients to lSnap
+        lPltfTrial$lSnap$newdat_df <- do.call(rbind.data.frame, newdat)
+        
+        # Assign patients to ISAs
+        lPltfTrial <-
           do.call(
-            match.fun(lPltfDsgn$lSimBase$fnSimBase), 
+            match.fun(lPltfDsgn$lAllocIntr$fnAllocIntr), 
             args = list(
               lPltfTrial   = lPltfTrial,
-              lAddArgs     = lPltfDsgn$lSimBase$lAddArgs
+              lAddArgs     = lPltfDsgn$lAllocIntr$lAddArgs
             )
           )
+        
+        # Move to ISAs
+        # Necessary because structure of assignment to arms and
+        # outcome simulation can differ in ISAs and result in 
+        # different numbers of columns
+        # Only those ISAs that actually received Pats this timestep
+        for (i in unique(lPltfTrial$lSnap$newdat_df$ISA)) {
+          lPltfTrial$isa[[i]]$tempPats <-
+            subset(lPltfTrial$lSnap$newdat_df, ISA == i)
+        }
+        
+        # Assign patients within ISAs
+        for (i in unique(lPltfTrial$lSnap$newdat_df$ISA)) {
+          lPltfTrial <-
+            do.call(
+              match.fun(lPltfDsgn$lIntrDsgn[[i]]$lAllocArm$fnAllocArm), 
+              args = list(
+                lPltfTrial   = lPltfTrial,
+                lAddArgs     = c(
+                  lPltfDsgn$lIntrDsgn[[i]]$lAllocArm$lAddArgs,
+                  current_id = i 
+                )
+              )
+            )
+        }
+        
+        # Simulate the patients' outcomes
+        for (i in unique(lPltfTrial$lSnap$newdat_df$ISA)) {
+          lPltfTrial <-
+            do.call(
+              match.fun(lPltfDsgn$lIntrDsgn[[i]]$lPatOutcome$fnPatOutcome), 
+              args = list(
+                lPltfTrial   = lPltfTrial,
+                lAddArgs     = c(
+                  lPltfDsgn$lIntrDsgn[[i]]$lPatOutcome$lAddArgs,
+                  current_id = i 
+                )
+              )
+            )
+        }
+        
+        # Append to real dataset and remove the temp data
+        for (i in unique(lPltfTrial$lSnap$newdat_df$ISA)) {
+          lPltfTrial$isa[[i]]$lPats <-
+            c(
+              lPltfTrial$isa[[i]]$lPats,
+              list(lPltfTrial$isa[[i]]$tempPats)
+            )
+          lPltfTrial$isa[[i]]$tempPats <- NULL
+        }
+        
       }
-      
-      # Add new patients to lSnap
-      lPltfTrial$lSnap$newdat_df <- do.call(rbind.data.frame, newdat)
-      
-      # Assign patients to ISAs
-      lPltfTrial <-
-        do.call(
-          match.fun(lPltfDsgn$lIntrAlloc$fnIntrAlloc), 
-          args = list(
-            lPltfTrial   = lPltfTrial,
-            lAddArgs     = lPltfDsgn$lIntrAlloc$lAddArgs
-          )
-        )
-      
-      # Append to data frames in ISAs
-      # Necessary because structure of assignment to arms and
-      # outcome simulation can differ in ISAs and result in 
-      # different numbers of columns
-      lPltfTrial <-
-        do.call(
-          match.fun(lPltfDsgn$lAddPats$fnAddPats), 
-          args = list(
-            lPltfTrial   = lPltfTrial,
-            lAddArgs     = lPltfDsgn$lAddPats$lAddArgs
-          )
-        )
-        
-      # Assign patients within ISAs
-        
-      # Simulate the patients' outcomes
       
       return(lPltfTrial)
       
@@ -240,16 +280,75 @@ lFnDef <- function() {
       lPltfDsgn,
       lPltfTrial
     ) {
-    #   
-    #   # Check Analysis Milestone
-    #   
-    #   # Run Analyses if necessary
-    #   
-    #   # Implement possible decisions
-    #   
-    #   # Check whether ISA is still actively enrolling
+      
+      for (i in 1:length(lPltfTrial$isa)) {
+
+        # Check Analysis Milestone
+        lPltfTrial <-
+          do.call(
+            match.fun(lPltfDsgn$lIntrDsgn[[i]]$lCheckAnlsMstn$fnCheckAnlsMstn), 
+            args = list(
+              lPltfTrial   = lPltfTrial,
+              lAddArgs     = c(
+                lPltfDsgn$lIntrDsgn[[i]]$lCheckAnlsMstn$lAddArgs,
+                current_id = i 
+              )
+            )
+          )
+        
+        # If any analysis milestone reached
+        if (any(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn)) {
+          # check how many analyses were conducted already and if this number is smaller than 
+          # the total number of milestones reached
+          if (sum(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn) > 
+              length(lPltfTrial$isa[[i]]$lAnalyses)) {
+            
+            # Run Analysis
+            lPltfTrial <-
+              do.call(
+                match.fun(lPltfDsgn$lIntrDsgn[[i]]$lAnls$fnAnls),
+                args = list(
+                  lPltfTrial   = lPltfTrial,
+                  lAddArgs     = c(
+                    lPltfDsgn$lIntrDsgn[[i]]$lAnls$lAddArgs,
+                    current_id = i,
+                    # Pass latest Milestone to Analysis Function
+                    nMstn      = sum(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn)
+                  )
+                )
+              )
+           
+          }
+        }
+        
+        # Implement possible Decisions
+        lPltfTrial <-
+          do.call(
+            match.fun(lPltfDsgn$lIntrDsgn[[i]]$lSynthRes$fnSynthRes),
+            args = list(
+              lPltfTrial   = lPltfTrial,
+              lAddArgs     = c(
+                lPltfDsgn$lIntrDsgn[[i]]$lSynthRes$lAddArgs,
+                current_id = i
+              )
+            )
+          )
+
+        # Check whether ISA is still actively enrolling
+        lPltfTrial <-
+          do.call(
+            match.fun(lPltfDsgn$lIntrDsgn[[i]]$lCheckEnrl$fnCheckEnrl), 
+            args = list(
+              lPltfTrial   = lPltfTrial,
+              lAddArgs     = c(
+                lPltfDsgn$lIntrDsgn[[i]]$lCheckEnrl$lAddArgs,
+                current_id = i 
+              )
+            )
+          )
+        
+      }
     
-      # For now, do nothing
       return(lPltfTrial)
       
       },
@@ -280,6 +379,13 @@ lFnDef <- function() {
       lPltfDsgn,
       lPltfTrial
     ) {
+      
+      print(
+        paste0(
+          "The platform was stopped at time ",
+          lPltfTrial$lSnap$dCurrTime
+        )
+      )
       
       # at the moment, just return lPltfTrial
       lPltfTrial$isa

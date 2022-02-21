@@ -38,17 +38,25 @@ validate_lStopRule <- function(x) {
 #' @export
 #' @rdname lStopRule
 # Helper Function
-lStopRule <- function() {
+lStopRule <- function(nWeeks = NULL, bNoActive = NULL) {
   
   new_lStopRule(
-    # # In easy Version: Stop platform, if all treatments have final decision!!
-    # fnStopRule = function(lPltfTrial, lAddArgs) {
-    #   all(!is.na(sapply(lPltfTrial$isa, function(x) x$cEndReason)))
-    # Stop After 50 weeks
+    
     fnStopRule = function(lPltfTrial, lAddArgs) {
-      lPltfTrial$lSnap$dCurrTime >= 50
+      
+      if (!is.null(nWeeks)) {
+        # Stop after x weeks
+        ret <- lPltfTrial$lSnap$dCurrTime >= lAddArgs$nWeeks
+      } else if (!is.null(bNoActive)) {
+        # Stop if all have final decision
+        ret <- all(!is.na(sapply(lPltfTrial$isa, function(x) x$cEndReason)))
+      } else {
+        stop("No valid stopping rule was specified.")
+      }
+      
+      return(ret)
     },
-    lAddArgs   = list()
+    lAddArgs   = list(nWeeks = nWeeks, bNoEnrol = bNoActive)
   )
 
 }

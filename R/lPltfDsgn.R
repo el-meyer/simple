@@ -1,14 +1,49 @@
-
-
-# How will the Objects look like?
-
-lPltfDsgn <- # Platform Design List
-  list(
-    lIntrDsgn     = list(), # List of Intervention Designs
-    lIntrStrtTime = list(), # List of rules for ISA start times
-    lIntrAlloc    = list(), # List of Allocation Ratio Rules to ISAs
-    lRecrPars     = list(), # List of Parameters for Recruitment Process
-    lPltfStopRule = list() # List of Platform Stopping Rules
+#' Platform Trial Design List
+#' 
+#' Platform Trial Design List of class lPltfDsgn
+#' 
+#' @param 
+#' 
+#' @examples
+#' 
+#' @name lPltfDsgn
+#' 
+#' @export
+#' @rdname lPltfDsgn
+# Constructor Function
+new_lPltfDsgn <- function(
+  lFnDef        = list(),
+  lIntrDsgn     = lIntrDsgn,
+  ...
+) {
+  structure(
+    list(
+      lFnDef    = lFnDef,
+      lIntrDsgn = lIntrDsgn,
+      ...
+    ),
+    class       = "lPltfDsgn"
   )
+}
+#' @export
+#' @rdname lPltfDsgn
+# Validator Function
+validate_lPltfDsgn <- function(x) {
+  
+}
+#' @export
+#' @rdname lPltfDsgn
+# Helper Function creates ISAs with binary endpoints
+lPltfDsgn <- function(
+  lIntrDsgn,
+  ...
+) {
+  
+  new_lPltfDsgn(
+    lFnDef    = lFnDef(),
+    lIntrDsgn = lIntrDsgn,
+    ...
+  )
+  
+}
 
-# How to include custom patient generation, analysis etc. function?
