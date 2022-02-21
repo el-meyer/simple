@@ -92,6 +92,9 @@ runSingleTrialSim <-
         )
       )
       
+      # Store current snapshot outside of lPltfTrial
+      lSnapshots <- c(lSnapshots, list(lPltfTrial$lSnap))
+      
       if (!bTrialClose) {
         # Handle ISA inclusion if platform did not stop
         assign(
@@ -110,9 +113,6 @@ runSingleTrialSim <-
         lPltfTrial$lSnap$dCurrTime <- lPltfTrial$lSnap$dCurrTime + 1
         
       }
-      
-      # Store current snapshot outside of lPltfTrial
-      lSnapshots <- c(lSnapshots, list(lPltfTrial$lSnap))
       
     }
     
