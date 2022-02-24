@@ -387,8 +387,18 @@ lFnDef <- function() {
         )
       )
       
-      # at the moment, just return lPltfTrial
-      lPltfTrial$isa
+      # Run Wrapup
+      ret <-
+        do.call(
+          match.fun(lPltfDsgn$lPltfSummary$fnPltfSummary), 
+          args = list(
+            lPltfTrial   = lPltfTrial,
+            lAddArgs     = lPltfDsgn$lPltfSummary$lAddArgs
+          )
+        )
+      
+      return(ret)
+      
     }
     
     

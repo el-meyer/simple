@@ -50,12 +50,13 @@ lIntrDsgn <-
 
 lPltfDsgn <- 
   lPltfDsgn(
-    lAddIntr      = lAddIntr(4),
+    lAddIntr      = lAddIntr(2),
     lAddPats      = lAddPats(),
     lAllocIntr    = lAllocIntr(),
     lIntrDsgn     = lIntrDsgn,
     lNewIntr      = lNewIntr(5),
-    lRecrPars     = lRecrPars(50),
+    lPltfSummary  = lPltfSummary(),
+    lRecrPars     = lRecrPars(5),
     lSimBase      = lSimBase(),
     lSnap         = lSnap(),
     lStopRule     = lStopRule(bNoActive = TRUE),
