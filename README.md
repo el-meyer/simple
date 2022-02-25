@@ -14,5 +14,4 @@ Alliance for TB Drug Development non-profit organization, Springworks
 Therapeutics Inc. This publication reflects the authors’ views. Neither
 IMI nor the European Union, EFPIA, or any Associated Partners are
 responsible for any use that may be made of the information contained
-herein. The research of Elias Laurin Meyer was funded until 11/2020 by
-Novartis through the University and not at an individual level.
+herein.
