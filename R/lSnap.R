@@ -54,7 +54,11 @@ lSnap <- function() {
           # vector of all ISA inclusion times so far
           vIntrInclTimes  = sapply(lPltfTrial$isa, function(x) x$nStartTime), 
           # vector of all ISA exit times so far
-          vIntrExitTimes  = sapply(lPltfTrial$isa, function(x) x$nEndTime),
+          vIntrExitTimes  = sapply(lPltfTrial$isa, function(x) x$nEndEnrlTime),
+          # vector of all ISA decision times so far
+          vIntrDecTimes   = sapply(lPltfTrial$isa, function(x) x$nEndTime),
+          # vector of all ISA decisions so far
+          vIntrDec        = sapply(lPltfTrial$isa, function(x) x$cEndReason),
           # Vector of current allocation ratio between ISAs
           vCurrAllocRatio = sapply(lPltfTrial$isa, function(x) x$dAlloc), 
           # Overall number of analyses already conducted

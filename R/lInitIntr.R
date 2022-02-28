@@ -71,9 +71,9 @@ lInitIntr <- function(
           nMaxNIntr    = lAddArgs$nMaxNIntr,
           # at what calendar time was ISA started
           nStartTime   = lPltfTrial$lSnap$dCurrTime, 
-          # at what calendar time was enrollment to ISA stoppend
+          # at what calendar time was enrollment to ISA stopped
           nEndEnrlTime = Inf,
-          # at what calendar time was ISA stopped
+          # at what calendar time was decision for ISA made
           nEndTime     = NA, 
           # reason why ISA was stopped
           cEndReason   = NA,
