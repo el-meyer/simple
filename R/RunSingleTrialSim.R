@@ -5,7 +5,8 @@
 
 runSingleTrialSim <-
   function(
-    lPltfDsgn # List that contains all the platform design rules
+    lPltfDsgn,          # List that contains all the platform design rules
+    bRetainSnaps = TRUE # Whether or not to keep the list of snapshots
   ) {
     
     # Start by initializing the platform trial element, lPltfTrial, 
@@ -22,8 +23,9 @@ runSingleTrialSim <-
     )
     
     # Create list of snapshots to be stored outside of lPltfTrial
-    # Later, this should be OPTIONAL
-    lSnapshots <- list()
+    if (bRetainSnaps) {
+      lSnapshots <- list()
+    }
     
     # Initially, platform trial is open 
     bTrialClose <- FALSE
@@ -92,8 +94,10 @@ runSingleTrialSim <-
         )
       )
       
-      # Store current snapshot outside of lPltfTrial
-      lSnapshots <- c(lSnapshots, list(lPltfTrial$lSnap))
+      if (bRetainSnaps) {
+        # Store current snapshot outside of lPltfTrial
+        lSnapshots <- c(lSnapshots, list(lPltfTrial$lSnap))
+      }
       
       if (!bTrialClose) {
         # Handle ISA inclusion if platform did not stop
@@ -119,9 +123,9 @@ runSingleTrialSim <-
     # Finally, create return object from platform trial object as specified
     # in fnWrapup
     
-    # Update snapshot
+    # Create final snapshot 
     assign(
-      "lPltfTrial",
+      "lFinalSnap",
       do.call(
         match.fun(lPltfDsgn$lSnap$fnSnap),
         args = list(
@@ -132,7 +136,7 @@ runSingleTrialSim <-
     )
     
     assign(
-      "ret",
+      "out",
       do.call(
         match.fun(lPltfDsgn$lFnDef$fnWrapup),
         args = list(
@@ -142,11 +146,23 @@ runSingleTrialSim <-
       )
     )
     
-    return(
+    # Create Summary as initial return object
+    ret <-
       list(
-        out   = ret,
-        snaps = lSnapshots
+        SUMMARY   = lFinalSnap
       )
+    
+    # Include List of Snapshots or extra output if needed
+    if (bRetainSnaps) {
+      ret$SNAPSHOTS <- lSnapshots
+    }
+    if (!is.null(out)) {
+      ret$OUTPUT <- out
+    }
+    
+    # Return return list
+    return(
+      ret
     )
     
   }

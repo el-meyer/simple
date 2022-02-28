@@ -42,9 +42,10 @@ lPltfSummary <- function() {
   
   new_lPltfSummary(
     
+    # By default do nothing extra
     fnPltfSummary = function(lPltfTrial, lAddArgs) {
       
-      lPltfTrial$isa
+      NULL
       
     },
     lAddArgs   = list()

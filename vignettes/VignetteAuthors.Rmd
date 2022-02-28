@@ -74,8 +74,6 @@ dat2 <-
 
 ### ISAs open, then run, and then close. No re-opening.
 
-### List of snapshots is always created (especially when running OC function, this should be optional or off by default)
-
 ### Randomization is strictly two-stage
 
 ### All patients are eligible for all ISAs and Arms
@@ -95,3 +93,6 @@ dat2 <-
 ### When checking for Analysis Milestones, the earlier milestones NEED to also be reached when later milestones are reached, e.g. n < n_target or time < t_target
 
 ### As soon as enrollment stopps, new ISAs can enter
+
+### By default return Final Snapshot and List of ISAs
+
