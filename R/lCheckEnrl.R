@@ -52,6 +52,7 @@ lCheckEnrl <- function() {
         ) {
         
         if (lPltfTrial$isa[[lAddArgs$current_id]]$bEnrl) {
+          # If this is the first time unit in which the enrollment is not active
           print(
             paste0(
               "ISA ",
@@ -60,11 +61,13 @@ lCheckEnrl <- function() {
               lPltfTrial$lSnap$dCurrTime
             )
           )
+          
+          lPltfTrial$lSnap$dExitIntr <- lPltfTrial$lSnap$dExitIntr + 1
+          lPltfTrial$isa[[lAddArgs$current_id]]$bEnrl <- FALSE
+          lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime <- lPltfTrial$lSnap$dCurrTime
+          
         }
         
-        lPltfTrial$isa[[lAddArgs$current_id]]$bEnrl <- FALSE
-        lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime <- lPltfTrial$lSnap$dCurrTime
-        lPltfTrial$lSnap$dExitIntr <- lPltfTrial$lSnap$dExitIntr + 1
       }
       
       return(lPltfTrial)
