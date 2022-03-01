@@ -66,9 +66,9 @@ lPltfDsgn <-
 
 # Full Run
 
-res <- runSingleTrialSim(lPltfDsgn)
+res <- fnRunSingleTrialSim(lPltfDsgn)
 
-res <- runSingleTrialSim(lPltfDsgn, bRetainSnaps = FALSE)
+res <- fnRunSingleTrialSim(lPltfDsgn, bRetainSnaps = FALSE)
 
 # Check if lPltfTrial is correctly initialized and closed
 
