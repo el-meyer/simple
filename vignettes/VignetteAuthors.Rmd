@@ -96,3 +96,5 @@ dat2 <-
 
 ### By default return Final Snapshot and List of ISAs
 
+### Mixing of ISAs with different endpoint types and data sharing is not possible via default functions
+
