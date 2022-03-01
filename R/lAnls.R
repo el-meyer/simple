@@ -38,9 +38,16 @@ validate_lAnls <- function(x) {
 #' @rdname lAnls
 # Helper Function
 lAnls <- function(
-  analysis_function = function(x) {
+  endpoint = "binary",
+  analysis_function_binary = function(x) {
     stats::prop.test(
-      table(x$Arm, x$Event)
+      table(x$Arm, x$Outcome)
+    )$p.value
+  }, # takes whole dataset as input
+  analysis_function_continuous = function(x) {
+    stats::t.test(
+      Outcome ~ Arm,
+      data = x
     )$p.value
   }, # takes whole dataset as input
   group1 = c("C", "All"), 
@@ -56,6 +63,22 @@ lAnls <- function(
       # By default, regardless of which Analysis Milestone, just run the same analysis
       # If endpoint == "binary", run Chi-Square Test
       # If endpoint == "continuous", run T-Test
+      
+      # Get correct analysis function
+      if (lAddArgs$endpoint == "binary") {
+        
+        analysis_function <- analysis_function_binary
+        
+      } else if (lAddArgs$endpoint == "continuous") {
+        
+        analysis_function <- analysis_function_continuous
+        
+      } else {
+        
+        stop("lAnls misspecified.")
+        
+      }
+    
       # For each group, decide which data is going to be used 
       # ("All" is just pooling, "Conc" uses only concurrent data and "Intr" uses only within Intr data)
       
@@ -188,7 +211,7 @@ lAnls <- function(
           group2df
         )
       
-      results <- match.fun(lAddArgs$analysis_function)(analysis_data)
+      results <- match.fun(analysis_function)(analysis_data)
       
       # Save Analysis Dataset as well
       lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses <- 
@@ -214,7 +237,13 @@ lAnls <- function(
       return(lPltfTrial)
       
     },
-    lAddArgs   = list(analysis_function = analysis_function, group1 = group1, group2 = group2)
+    lAddArgs   = list(
+      endpoint                     = endpoint,
+      analysis_function_binary     = analysis_function_binary, 
+      analysis_function_continuous = analysis_function_continuous,
+      group1                       = group1, 
+      group2                       = group2
+    )
   )
   
 }

@@ -56,7 +56,7 @@ lCheckAnlsMstn <- function(bInclude = TRUE, vInfTimes = c(1), column = "OutObsTi
       
       # Number of patients with observed outcome
       nPatOutObs <-
-        sum(df[[lAddArgs$column]] <= lPltfTrial$lSnap$dCurrTime)
+        sum(df[[lAddArgs$column]] <= lPltfTrial$lSnap$dCurrTime, na.rm = TRUE)
       
       # Vector of TRUE or FALSE if percentage of events have been observed
       lPltfTrial$lSnap$isa_temp[[lAddArgs$current_id]]$AnlsMstn <- 

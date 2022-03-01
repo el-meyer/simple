@@ -4,7 +4,7 @@ lIntrDsgn <-
     list(
       lInitIntr       = lInitIntr(cIntrName = "A", cArmNames = c("C", "T1")),
       lAllocArm       = lAllocArm(),
-      lPatOutcome     = lPatOutcome(cGroups = c("C", "T1"), dRates = c(0.1, 0.2), dTrend = 0, nLag = 10),
+      lPatOutcome     = lPatOutcome(cGroups = c("C", "T1"), dTheta = c(0.1, 0.2), dTrend = 0, nLag = 10),
       lCheckAnlsMstn  = lCheckAnlsMstn(),
       lAnls           = lAnls(group1 = c("C", "Intr"), group2 = c("T1", "Intr")),
       lSynthRes       = lSynthRes(),
@@ -13,7 +13,7 @@ lIntrDsgn <-
     list(
       lInitIntr       = lInitIntr(cIntrName = "B", cArmNames = c("C", "T2")),
       lAllocArm       = lAllocArm(),
-      lPatOutcome     = lPatOutcome(cGroups = c("C", "T2"), dRates = c(0.1, 0.2), dTrend = 0, nLag = 10),
+      lPatOutcome     = lPatOutcome(cGroups = c("C", "T2"), dTheta = c(0.1, 0.2), dTrend = 0, nLag = 10),
       lCheckAnlsMstn  = lCheckAnlsMstn(),
       lAnls           = lAnls(group1 = c("C", "All"), group2 = c("T2", "Intr")),
       lSynthRes       = lSynthRes(),
@@ -22,25 +22,25 @@ lIntrDsgn <-
     list(
       lInitIntr       = lInitIntr(cIntrName = "C", cArmNames = c("C", "T3")),
       lAllocArm       = lAllocArm(),
-      lPatOutcome     = lPatOutcome(cGroups = c("C", "T3"), dRates = c(0.1, 0.2), dTrend = 0, nLag = 10),
+      lPatOutcome     = lPatOutcome(cGroups = c("C", "T3"), dTheta = c(1, 2), dSigma = c(1, 1), dTrend = 0, nLag = 10),
       lCheckAnlsMstn  = lCheckAnlsMstn(),
-      lAnls           = lAnls(group1 = c("C", "All"), group2 = c("T3", "Intr")),
+      lAnls           = lAnls(endpoint = "continuous", group1 = c("C", "Intr"), group2 = c("T3", "Intr")),
       lSynthRes       = lSynthRes(),
       lCheckEnrl      = lCheckEnrl()
     ),
     list(
       lInitIntr       = lInitIntr(cIntrName = "D", cArmNames = c("C", "T4")),
       lAllocArm       = lAllocArm(),
-      lPatOutcome     = lPatOutcome(cGroups = c("C", "T4"), dRates = c(0.1, 0.2), dTrend = 0, nLag = 10),
+      lPatOutcome     = lPatOutcome(cGroups = c("C", "T4"), dTheta = c(1, 2), dSigma = c(1, 1), dTrend = 0, nLag = 10),
       lCheckAnlsMstn  = lCheckAnlsMstn(),
-      lAnls           = lAnls(group1 = c("C", "All"), group2 = c("T4", "Intr")),
+      lAnls           = lAnls(endpoint = "continuous", group1 = c("C", "All"), group2 = c("T4", "Intr")),
       lSynthRes       = lSynthRes(),
       lCheckEnrl      = lCheckEnrl()
     ),
     list(
       lInitIntr       = lInitIntr(cIntrName = "E", cArmNames = c("C", "T5")),
       lAllocArm       = lAllocArm(),
-      lPatOutcome     = lPatOutcome(cGroups = c("C", "T5"), dRates = c(0.1, 0.2), dTrend = 0, nLag = 10),
+      lPatOutcome     = lPatOutcome(cGroups = c("C", "T5"), dTheta = c(0.1, 0.2), dTrend = 0, nLag = 10),
       lCheckAnlsMstn  = lCheckAnlsMstn(),
       lAnls           = lAnls(group1 = c("C", "All"), group2 = c("T5", "Intr")),
       lSynthRes       = lSynthRes(),
