@@ -1,5 +1,7 @@
-# Helper function for later
-gen_patient_data <- 
+# Helper function for use in lSimBase or lPatOutcome
+# Programmed by: Dariga Ramazanova
+
+fnGenPatData <- 
   function(
     n,
     vars, # 

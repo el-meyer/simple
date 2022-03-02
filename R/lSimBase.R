@@ -51,7 +51,7 @@ lSimBase <-
   new_lSimBase(
     fnSimBase = function(lPltfTrial, lAddArgs) {
 
-      gen_patient_data(
+      fnGenPatData(
         n = 1,
         vars = lAddArgs$vars,
         id = "no",

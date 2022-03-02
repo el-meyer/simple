@@ -3,7 +3,7 @@
 
 # Where to add data management to reduce runtime?
 
-runSingleTrialSim <-
+fnRunSingleTrialSim <-
   function(
     lPltfDsgn,          # List that contains all the platform design rules
     bRetainSnaps = TRUE # Whether or not to keep the list of snapshots
