@@ -7,7 +7,7 @@ lIntrDsgn <-
       lPatOutcome     = lPatOutcome(cGroups = c("C", "T1"), dTheta = c(0.1, 0.2), dTrend = 0, nLag = 10),
       lCheckAnlsMstn  = lCheckAnlsMstn(),
       lAnls           = lAnls(group1 = c("C", "Intr"), group2 = c("T1", "Intr")),
-      lSynthRes       = lSynthRes(),
+      lSynthRes       = lSynthRes(), 
       lCheckEnrl      = lCheckEnrl()
     ),
     list(
@@ -68,7 +68,7 @@ lPltfDsgn <-
 
 res <- fnRunSingleTrialSim(lPltfDsgn)
 
-res <- fnRunSingleTrialSim(lPltfDsgn, bRetainSnaps = FALSE)
+res <- fnRunSingleTrialSim(lPltfDsgn, bCreateLog = FALSE, bRetainSnaps = FALSE)
 
 # Check if lPltfTrial is correctly initialized and closed
 

@@ -82,14 +82,14 @@ lInitIntr <- function(
           # List of conducted analyses
           lAnalyses    = list(),
           # List of patients in this ISA
-          lPats       = list(),
+          lPats        = list(),
           # List of arms within this ISA
           lArms        = vector("list", length(lAddArgs$cArmNames))
         )
       
       for (i in 1:length(lAddArgs$cArmNames)) {
         isa$lArms[[i]]$cArmName <- lAddArgs$cArmNames[i]
-        isa$lArms[[i]]$bEnrl   <- TRUE
+        isa$lArms[[i]]$bEnrl    <- TRUE
         isa$lArms[[i]]$nMaxNArm <- lAddArgs$vMaxNArms[i]
       }
       
