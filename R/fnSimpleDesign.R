@@ -2,12 +2,12 @@
 #'
 #' @param endpoint           Type of endpoint; either "binary" or "continuous"
 #' 
-#' @param control_effect     Effect of control treatment. Either response rate if endpoint is
-#'                           binary or mean if endpoint is continuous.
-#' 
-#' @param effect_size        If endpoint is binary, defined as odds-ratio. 
-#'                           If endpoint is continuous, defined as difference in means 
-#'                           (standard deviation is assumed to be 1)
+#' @param effects            Vector of length two giving the effects of the treatments. 
+#'                           Either response rates if endpoint is binary or 
+#'                           means if endpoint is continuous.
+#'                           
+#' @param sd                 If endpoint is continuous, a vector of length two
+#'                           giving the standard deviation in both groups.
 #'
 #' @param sample_size        Sample size per arm in the trial
 #' 
@@ -28,11 +28,10 @@
 #' @return Object of class lPltfDsgn to be supplied to fnRunSingleTrialSim or modified later
 #'
 #' @examples
-#'
+#' 
 #' lPltfDsgn <- fnSimpleDesign(
 #'     endpoint       = "binary",
-#'     control_effect = 0.1,
-#'     effect_size    = 2,
+#'     effects        = c(0.1, 0.2),
 #'     sample_size    = 100,
 #'     intr_at_start  = 3,
 #'     sig_level      = 0.05,
@@ -43,12 +42,28 @@
 #' )
 #' 
 #' out <- fnRunSingleTrialSim(lPltfDsgn)
+#' out <- fnRunSingleTrialSim(fnSimpleDesign())
+#' 
+#' lPltfDsgn2 <- fnSimpleDesign(
+#'     endpoint       = "continuous",
+#'     effects        = c(1, 1.5),
+#'     sd             = c(2, 2.2),
+#'     sample_size    = 100,
+#'     intr_at_start  = 3,
+#'     sig_level      = 0.05,
+#'     data_sharing   = "all",
+#'     max_intr       = 10,
+#'     obs_lag        = 10,
+#'     recr_speed     = 5
+#' )
+#' 
+#' out <- fnRunSingleTrialSim(lPltfDsgn2)
 #'
 #' @export
 fnSimpleDesign <- function(
   endpoint       = "binary",
-  control_effect = 0.1,
-  effect_size    = 2,
+  effects        = c(0.1, 0.2),
+  sd             = NULL,
   sample_size    = 100,
   intr_at_start  = 3,
   sig_level      = 0.05,
@@ -60,25 +75,6 @@ fnSimpleDesign <- function(
   
   # Create all sort of warning messages and stop messages
   
-  # Helper function
-  risk_plus_or <- function(
-    risk, 
-    or
-  ) {
-    odds <- risk/(1-risk)
-    new_odds <- odds * or
-    new_risk <- new_odds / (1 + new_odds)
-    return(new_risk)
-  }
-  
-  if (endpoint == "binary") {
-    dTheta <- c(control_effect, risk_plus_or(control_effect, effect_size))
-    dSigma <- NULL
-  } else {
-    dTheta <- c(control_effect, control_effect + effect_size)
-    dSigma <- c(1, 1)
-  }
-  
   lIntrDsgn <- 
     c(
       rep(
@@ -86,9 +82,9 @@ fnSimpleDesign <- function(
           list(
             lInitIntr       = lInitIntr(cIntrName = "", cArmNames = c("C", "T"), nMaxNIntr = sample_size),
             lAllocArm       = lAllocArm(),
-            lPatOutcome     = lPatOutcome(cGroups = c("C", "T"), dTheta = dTheta, dSigma = dSigma, dTrend = 0, nLag = obs_lag),
+            lPatOutcome     = lPatOutcome(cGroups = c("C", "T"), dTheta = effects, dSigma = sd, dTrend = 0, nLag = obs_lag),
             lCheckAnlsMstn  = lCheckAnlsMstn(),
-            lAnls           = lAnls(group1 = c("C", data_sharing), group2 = c("T", "Intr")),
+            lAnls           = lAnls(endpoint = endpoint, group1 = c("C", data_sharing), group2 = c("T", "Intr")),
             lSynthRes       = lSynthRes(alpha = sig_level),
             lCheckEnrl      = lCheckEnrl()
           )

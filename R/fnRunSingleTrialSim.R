@@ -5,9 +5,18 @@
 
 fnRunSingleTrialSim <-
   function(
-    lPltfDsgn,          # List that contains all the platform design rules
-    bRetainSnaps = TRUE # Whether or not to keep the list of snapshots
+    lPltfDsgn,           # List that contains all the platform design rules
+    bRetainSnaps = TRUE, # Whether or not to keep the list of snapshots
+    bCreateLog   = TRUE  # Whether or not to create a log file in current folder
   ) {
+    
+    # Check whether or not to create a log
+    
+    if (bCreateLog) {
+      sink("platform.log", append = TRUE, split = FALSE)
+    } else {
+      sink("nul", split = FALSE)
+    }
     
     # Start by initializing the platform trial element, lPltfTrial, 
     # according to the algorithm specified in fnInitialize
@@ -159,6 +168,8 @@ fnRunSingleTrialSim <-
     if (!is.null(out)) {
       ret$OUTPUT <- out
     }
+    
+    sink()
     
     # Return return list
     return(
