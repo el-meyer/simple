@@ -1,4 +1,4 @@
 library(testthat)
-library(simpl)
+library(simple)
 
-test_check("simpl")
+test_check("simple")

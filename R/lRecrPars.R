@@ -11,6 +11,7 @@
 #' x <- lRecrPars(4)
 #' validate_lRecrPars(x)
 #' plot(x)
+#' summary(x)
 #' 
 #' @name lRecrPars
 #' 
@@ -46,17 +47,10 @@ validate_lRecrPars <- function(x) {
     )
   }
   
-  # Error if length of list < 2
-  if (length(x) < 2) {
-    stop(
-      "Too few attributes were specified."
-    )
-  }
-  
   # Check whether correct names
   if (!identical(names(x), c("fnRecrProc", "lAddArgs"))) {
     stop(
-      "Wrong names."
+      "Wrong module attributes (too many, too few or wrong names)."
     )
   }
   
@@ -83,24 +77,22 @@ validate_lRecrPars <- function(x) {
       "Function not properly specified."
     )
   }
-  
-  # Warnings if length of list > 2
-  if (length(x) > 2) {
-    warning(
-      "Too many attributes were specified; ignoring additional attributes."
-    )
-  }
-  
+
 }
 #' @export
 #' @rdname lRecrPars
 # Helper Function
-lRecrPars <- function(lambda) {
+lRecrPars <- function(x) {
+  
+  # Throw error if x is not a scalar
+  if (!(is.atomic(x) && length(x) == 1L)) {
+    stop("Suuplied input is not a scalar")
+  }
   
   new_lRecrPars(
     # In easy Version: Simply number or participants
-    fnRecrProc = function(lPltfTrial, lAddArgs) {lAddArgs$lambda},
-    lAddArgs   = list(lambda = lambda)
+    fnRecrProc = function(lPltfTrial, lAddArgs) {lAddArgs$x},
+    lAddArgs   = list(x = x)
   )
 
 }
@@ -108,21 +100,20 @@ lRecrPars <- function(lambda) {
 #' @export
 #' @rdname lRecrPars
 # Plot Function
-# Expects vector of current times and active arms
-# Default is Time 1-52 and always one active arm
-plot.lRecrPars <- function(x, dCurrTime = 1:52, dActvIntr = rep(1, 52), ...) {
+# Expects vector of current times and all other snapshot variables used in the function definition
+# Default is Time 1-52 
+plot.lRecrPars <- function(x, dCurrTime = 1:52, ...) {
   
   # Get all Input Arguments except for x
   lInpArgs <- 
     list(
       dCurrTime = dCurrTime,
-      dActvIntr = dActvIntr,
       ...
     )
   
   # All Input Arguments need to have the same length
   if (length(unique(sapply(lInpArgs, FUN = length))) != 1) {
-    stop("Length of supplied global variables differs.")
+    stop("Length of supplied snapshot variables differs.")
   }
 
   y <- numeric(length(dCurrTime))
@@ -150,7 +141,6 @@ plot.lRecrPars <- function(x, dCurrTime = 1:52, dActvIntr = rep(1, 52), ...) {
   mydata <- 
     dplyr::tibble(
       Time       = dCurrTime,
-      ActiveArms = dActvIntr,
       New        = y
     ) %>% 
     dplyr::mutate(
@@ -158,34 +148,18 @@ plot.lRecrPars <- function(x, dCurrTime = 1:52, dActvIntr = rep(1, 52), ...) {
     ) %>% 
     tidyr::pivot_longer(
       c("New", "Cumulative"),
-      names_to = "PatientArrivals",
+      names_to = "AccruedPatients",
       values_to = "Number"
     )
   
   g1 <- 
-    ggplot2::ggplot(mydata, ggplot2::aes(x = Time, y = Number, color = PatientArrivals)) + 
+    ggplot2::ggplot(mydata, ggplot2::aes(x = Time, y = Number, color = AccruedPatients)) + 
     ggplot2::geom_point() +
     ggplot2::geom_line() + 
     ggplot2::theme_bw() + 
-    ggplot2::ggtitle("Accrued Patients over time")
+    ggplot2::ggtitle("Simulated accrued Patients over time with respect to specified platform trajectory")
   
-  g2 <- 
-    ggplot2::ggplot(mydata, ggplot2::aes(x = Time, y = ActiveArms)) + 
-    ggplot2::geom_point() +
-    ggplot2::geom_line() + 
-    ggplot2::theme_bw() + 
-    ggplot2::ggtitle("Assumed number of active arms over time")
-  
-  
-  g <- 
-    ggpubr::ggarrange(
-      g1, 
-      g2,
-      nrow = 2,
-      common.legend = TRUE
-    )
-  
-  print(g)
+  print(g1)
   
   invisible(mydata)
   
