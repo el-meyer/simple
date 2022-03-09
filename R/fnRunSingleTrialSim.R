@@ -5,15 +5,19 @@
 
 fnRunSingleTrialSim <-
   function(
-    lPltfDsgn,           # List that contains all the platform design rules
-    bRetainSnaps = TRUE, # Whether or not to keep the list of snapshots
-    bCreateLog   = TRUE  # Whether or not to create a log file in current folder
+    lPltfDsgn,                # List that contains all the platform design rules
+    bRetainSnaps = TRUE,      # Whether or not to keep the list of snapshots
+    bCreateLog   = TRUE,      # Whether or not to create a log file in current folder
+    cLogName     = "platform" # Name of Log File
   ) {
     
     # Check whether or not to create a log
-    
     if (bCreateLog) {
-      sink("platform.log", append = TRUE, split = FALSE)
+      # Delte possibly already existing log file
+      if (file.exists(paste0(cLogName, ".log"))) {
+        file.remove(paste0(cLogName, ".log"))
+      }
+      sink(paste0(cLogName, ".log"), append = TRUE, split = FALSE)
     } else {
       sink("nul", split = FALSE)
     }

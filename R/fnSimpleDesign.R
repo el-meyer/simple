@@ -2,12 +2,16 @@
 #'
 #' @param endpoint           Type of endpoint; either "binary" or "continuous"
 #' 
-#' @param effects            Vector of length two giving the effects of the treatments. 
+#' @param contr_eff          Control treatment effect. Either response rate if endpoint is binary or 
+#'                           mean if endpoint is continuous.
+#' 
+#' @param trt_effs           Vector of length max_intr giving the treatment effects. 
 #'                           Either response rates if endpoint is binary or 
 #'                           means if endpoint is continuous.
 #'                           
 #' @param sd                 If endpoint is continuous, a vector of length two
-#'                           giving the standard deviation in both groups.
+#'                           giving the standard deviation in the control groups (first entry)
+#'                           and the experimental groups (second entry).
 #'
 #' @param sample_size        Sample size per arm in the trial
 #' 
@@ -31,12 +35,13 @@
 #' 
 #' lPltfDsgn <- fnSimpleDesign(
 #'     endpoint       = "binary",
-#'     effects        = c(0.1, 0.2),
+#'     contr_eff      = 0.1,
+#'     trt_effs       = rep(0.2, 5),
 #'     sample_size    = 100,
 #'     intr_at_start  = 3,
 #'     sig_level      = 0.05,
 #'     data_sharing   = "all",
-#'     max_intr       = 10,
+#'     max_intr       = 5,
 #'     obs_lag        = 10,
 #'     recr_speed     = 5
 #' )
@@ -46,13 +51,14 @@
 #' 
 #' lPltfDsgn2 <- fnSimpleDesign(
 #'     endpoint       = "continuous",
-#'     effects        = c(1, 1.5),
+#'     contr_eff      = 1,
+#'     trt_effs       = c(1, 1.5, 2),
 #'     sd             = c(2, 2.2),
 #'     sample_size    = 100,
-#'     intr_at_start  = 3,
+#'     intr_at_start  = 2,
 #'     sig_level      = 0.05,
 #'     data_sharing   = "all",
-#'     max_intr       = 10,
+#'     max_intr       = 3,
 #'     obs_lag        = 10,
 #'     recr_speed     = 5
 #' )
@@ -62,7 +68,8 @@
 #' @export
 fnSimpleDesign <- function(
   endpoint       = "binary",
-  effects        = c(0.1, 0.2),
+  contr_eff      = 0.1,
+  trt_effs       = rep(0.2, max_intr),
   sd             = NULL,
   sample_size    = 100,
   intr_at_start  = 3,
@@ -75,23 +82,21 @@ fnSimpleDesign <- function(
   
   # Create all sort of warning messages and stop messages
   
-  lIntrDsgn <- 
-    c(
-      rep(
-        list(
-          list(
-            lInitIntr       = lInitIntr(cIntrName = "", cArmNames = c("C", "T"), nMaxNIntr = sample_size),
-            lAllocArm       = lAllocArm(),
-            lPatOutcome     = lPatOutcome(cGroups = c("C", "T"), dTheta = effects, dSigma = sd, dTrend = 0, nLag = obs_lag),
-            lCheckAnlsMstn  = lCheckAnlsMstn(),
-            lAnls           = lAnls(endpoint = endpoint, group1 = c("C", data_sharing), group2 = c("T", "Intr")),
-            lSynthRes       = lSynthRes(alpha = sig_level),
-            lCheckEnrl      = lCheckEnrl()
-          )
-        ),
-        max_intr
+  
+  # add all ISAs separately
+  lIntrDsgn <- list()
+  for (i in 1:max_intr) {
+    lIntrDsgn[[i]] <- 
+      list(
+        lInitIntr       = lInitIntr(cIntrName = "", cArmNames = c("C", "T"), nMaxNIntr = sample_size),
+        lAllocArm       = lAllocArm(),
+        lPatOutcome     = lPatOutcome(cGroups = c("C", "T"), dTheta = c(contr_eff, trt_effs[i]), dSigma = sd, dTrend = 0, nLag = obs_lag),
+        lCheckAnlsMstn  = lCheckAnlsMstn(),
+        lAnls           = lAnls(endpoint = endpoint, group1 = c("C", data_sharing), group2 = c("T", "Intr")),
+        lSynthRes       = lSynthRes(alpha = sig_level),
+        lCheckEnrl      = lCheckEnrl()
       )
-    )
+  }
   
   lPltfDsgn <- 
     lPltfDsgn(
