@@ -1,16 +1,16 @@
 ---
 title: "Recruitment Parameters Module Vignette"
 output: 
-  rmarkdown::html_vignette:
+  rmarkdown::html_document:
       toc: true
+      toc_float: true
       toc_depth: 3
       fig_caption: yes
+      highlight: textmate
 vignette: >
-  %\VignetteIndexEntry{Recruitment Parameters Module Vignette}
+  %\VignetteIndexEntry{lRecrPars}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
-  
-
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, echo = FALSE}
@@ -20,31 +20,31 @@ source("..\\R\\lRecrPars.R")
 
 ```
 
-## Introduction
+# Introduction
 
-This vignette aims to describe the recruitment module of the *simple* package.
+This vignette aims to describe the recruitment module *lRecrPars* of the *simple* package.
 The purpose of the module is to control the recruitment of patients over time. 
 
 ## Function arguments
 
-The module will have global variables as well as specific arguments that can be added and specified in the recruitment function
+As input variables to determine the patient accrual at time **t**, the module will take the platform trial status at time **t**, as well as arguments specific to the patient recruitment.
 
 #### Current status of platform trial `lPltfTrial` 
 
-This is a snapshot image of the current platform trial status and changes during the simulation. The current time could be an example for a variable of interest for which it makes sense to be available to the modules.
+This is a snapshot image of the current platform trial status and changes during the simulation. The current time or number of active arms could be examples of variables of interest which we would like to access.
 
 #### Additional arguments `lAddArgs`
 
-Apart from global variables, module specific variables can be added. Examples which are later implemented in the *Examples* section are:
+Apart from the trial snapshot, module specific variables can be added. Examples which are later implemented in the *Examples* section are:
 
-* different distribution parameters *lambda* for different points in time.
+* different fixed accruals for different points in time.
 * a *cap* if you want to have a maximum number of patients to be recruited per time step.
 * an enrollment window, if you want to prohibit recruitment for some periods.
 
 ## Functions
 
 ### Constructor Function
-The idea is to be able to include global variables of the simulation as well as any additional variable you would want to impact your recruitment.
+The idea is to be able to include the platform snapshot as well as any additional variable you would want to impact your recruitment.
 
 The central function of the module is `new_lRecrPars`. It defines the "rules" of recruitment you want to implement in the simulation.
 
@@ -67,8 +67,7 @@ If you do not want to think about a recruitment strategy, you can use the helper
 lRecrPars
 ```
 
-The only argument you have to enter is the average number of patients added per time step. The function then draws from a poisson distribution.
-For example `lRecrPars(10)` gives the following output when plotted:
+The only argument you have to enter is the number of patients added per time step. For example `lRecrPars(10)` behaves the following way:
 
 ```{r}
 x <- lRecrPars(10)
@@ -76,12 +75,9 @@ plot(x)
 ```
 
 
-
 ### Plot
 
-Plotting objects created by `lRecrPars` or `new_lRecrPars` displays the development of patients recruitment as well as the number of active arms over time.
-
-Snapshot variables that this specific plot function requires are `dCurrTime` and `dActvIntr`, describing the current time and the number of active arms at the current time respectively. By default the current time goes from 1 to 52 and only one arm is active at every time point. These vectors have to be of the same length.
+Plotting objects created by `lRecrPars` or `new_lRecrPars` displays the simulated accrual of patients over time. By default the time ranges from 1 to 52. Any number of further snapshot variables describing a specific trajectory of the platform trial can be passed to the plot function.
 
 For the actual plot you just call `plot()` with the object you want to plot.
 
@@ -94,15 +90,18 @@ Any changes in snapshot variables can be specified in the plot call. If you are 
 
 ```{r}
 x <- lRecrPars(10)
-plot(x,
-     dCurrTime = 1:20,
-     dActvIntr = c(rep(1,10),
-                   rep(2,10)))
+plot(
+  x,
+  dCurrTime = 1:20,
+  dActvIntr = c(
+    rep(1,10),
+    rep(2,10)
+    )
+  )
+
 ```
 
-
-Optionally you can also state the snapshot variables you added in the object created by the `new_lRecrPars` function.
-
+Note that this does not change the actual recruitment as no dependency on the number of active interventions was specified in the recruitment module.
 
 
 ### Summary
@@ -116,7 +115,7 @@ summary(x)
 
 ## Examples
 
-1. **Poisson distributed recruitment**
+1. **Fixed recruitment speed of 10 patients per time unit**
 
 The easiest way is to simply use:
 
@@ -132,7 +131,7 @@ summary(x)
 2. **Decreasing enrollment over time**
 
 ```{r}
-#every time step draw from poisson distribution with lambda = 50 / current time
+# every time step draw from poisson distribution with lambda = 50 / current time
 x <- new_lRecrPars(
   fnRecrProc = function(lPltfTrial, lAddArgs) {
     rpois(1, 50 / lPltfTrial$lSnap$dCurrTime)
@@ -184,9 +183,11 @@ x <-
 plot(
   x, 
   dCurrTime = 1:30, 
-  dActvIntr = c(rep(1, 10),
-                rep(2, 10),
-                rep(1, 10))
+  dActvIntr = c(
+    rep(1, 10),
+    rep(2, 10),
+    rep(1, 10)
+  )
 )
 summary(x)
 
@@ -239,3 +240,97 @@ x <-
 plot(x)
 ```
 
+
+# Exercises
+
+Below will be some tasks of increasing complexity to make you comfortable using the module and figure out difficulties.
+
+## Tasks
+
+Try to use the module to program the following tasks according to the instructions. You can display the solution upon clicking the *code* button. The examples of the vignette may serve as a helping hand.
+The plots below show what the plotted output could look like.
+
+**1. Create a scenario, where the number of patients recruited at every time step is taken from a binomial distribution with n = 20 and p = 0.2**
+
+```{r}
+x <- new_lRecrPars(
+  fnRecrProc = function(lPltfTrial, lAddArgs){
+    n_pat = rbinom(1, lAddArgs$n, lAddArgs$prob)
+  },
+  
+  # here we define the parameters used in the function call
+  lAddArgs = list(
+    n = 20,
+    prob = 0.2
+  )
+)
+
+# the plot functions acts as a proxy for the actual simulation in which the object of class lRecrPars is used
+plot(x)
+```
+
+
+**2. Create a scenario where every 3rd time unit the number of patients recruited corresponds to the current time unit. In the remaining time units no recruitment happens.**
+
+```{r}
+
+x <- new_lRecrPars(
+  fnRecrProc = function(lPltfTrial, lAddArgs){
+    if(lPltfTrial$lSnap$dCurrTime %% 3 == 0){
+      n_pat <- lPltfTrial$lSnap$dCurrTime
+    } else {
+      n_pat <- 0
+    }
+  }
+)
+
+plot(x)
+
+```
+
+
+**3. Create a scenario where the number of patients recruited at every time step is drawn from a poisson distribution. The distribution parameter *lambda* depends on the number of active arms and the time period. **
+
+**For time period 1-40: lambda = 5* number of active arms**
+
+**For time period 41-52: lambda = 10* number of active arms**
+
+**For time period 1-10: number of active arms = 1**
+
+**For time period 11-30: number of active arms = 2**
+
+**For time period 31-52: number of active arms = 3**
+
+*Hint: To check the module, the assumed number of active arms is specified in the plot function, as this is not a feature of the lRecrPars module.
+
+```{r}
+x <- new_lRecrPars(
+  fnRecrProc = function(lPltfTrial, lAddArgs){
+    
+    # depending on the time unit, a different lambda is taken for the distribution.
+    if(lPltfTrial$lSnap$dCurrTime <= 40){
+      n_pat <- rpois(1, lambda = lAddArgs$lambda1 * lPltfTrial$lSnap$dActvIntr)
+    } else {
+      n_pat <- rpois(1, lambda = lAddArgs$lambda2 * lPltfTrial$lSnap$dActvIntr)
+    }
+  },
+  
+  # here we set the different lambdas
+  lAddArgs = list(
+    lambda1 = 5,
+    lambda2 = 10
+  )
+)
+
+# here the number of active arms is specified for each time unit. It has to be a vector of the same length as the simulation duration which is by default set to 52.
+plot(
+  x,
+  dActvIntr = c(rep(1, 10), rep(2, 20), rep(3, 22))
+)
+```
+
+
+### Remarks
+Note that in scenario 1 the values of n and p could be directly written into the *rbinom* function without stating them in the *lAddArgs* argument. Perks of stating them in *lAddArgs* are the appearance in an overview you might want to print using summary() as well as efficiency if these arguments are used more than once or should be varied in a simulation study.
+
+The snapshot variables saved in the list *lPltfTrial* have a fixed name which can not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lPltfTrial* will contain an overview of all the snapshot variables used in any module.
