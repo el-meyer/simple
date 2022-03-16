@@ -3,7 +3,8 @@
 #' Rules for ISA starting times of class lNewIntr
 #' 
 #' @param fnNewIntr      Function that checks how many new ISAs should be added to the platform
-#' @param lAddArgs        Further arguments used in fnAddNewIntr
+#' 
+#' @param lAddArgs       Further arguments used in fnNewIntr
 #' 
 #' @examples
 #' 
@@ -23,12 +24,12 @@ new_lNewIntr <-
       lPltfTrial,
       lAddArgs
     ) {},
-    lAddArgs        = list()
+    lAddArgs      = list()
   ) {
     structure(
       list(
-        fnNewIntr     = fnNewIntr,
-        lAddArgs      = lAddArgs
+        fnNewIntr = fnNewIntr,
+        lAddArgs  = lAddArgs
       ),
       class       = "lNewIntr"
     )
@@ -38,17 +39,17 @@ new_lNewIntr <-
 # Validator Function
 validate_lNewIntr <- function(x) {
   
-  # Error if length of list < 2
-  if (length(x) < 2) {
-    warning(
-      "Too few attributes were specified."
+  # Error if list is not of class lNewIntr
+  if (class(x) != "lNewIntr") {
+    stop(
+      "Object is not of class lNewIntr."
     )
   }
   
   # Check whether correct names
   if (!identical(names(x), c("fnNewIntr", "lAddArgs"))) {
     stop(
-      "Wrong names."
+      "Wrong module attributes (too many, too few or wrong names)."
     )
   }
   
@@ -70,27 +71,28 @@ validate_lNewIntr <- function(x) {
   f_args <- as.list(args(f))
   
   # Check input parameters of function
-  if (
-    !"lPltfTrial" %in% names(f_args) |
-    !"lAddArgs" %in% names(f_args)
-  ) {
+  if (!"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
     stop(
       "Function not properly specified."
     )
   }
   
-  # Warnings if length of list > 2
-  if (length(x) > 2) {
-    warning(
-      "Too many attributes were specified; ignoring additional attributes."
-    )
-  }
-  
 }
+
 #' @export
 #' @rdname lNewIntr
 # Helper Function
-lNewIntr <- function(dMaxIntr) {
+lNewIntr <- function(nMaxIntr) {
+  
+  # Throw error if x is not a scalar
+  if (!(is.atomic(nMaxIntr) && length(nMaxIntr) == 1L)) {
+    stop("Supplied input is not a scalar")
+  }
+  
+  # Throw error if x is not an integer
+  if (!nMaxIntr == round(nMaxIntr)) {
+     stop("Supplied input is not an interger")
+  }
   
   # In simple version: 
   # Replace outgoing ISAs only
@@ -99,15 +101,15 @@ lNewIntr <- function(dMaxIntr) {
     fnNewIntr  = function(lPltfTrial, lAddArgs) {
       # if both an ISA was outgoing in this time step and the maximum number has not yet been reached
       # add as many ISAs as were outgoing
-      if (lPltfTrial$lSnap$dExitIntr > 0 & length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$dMaxIntr) {
+      if (lPltfTrial$lSnap$dExitIntr > 0 & length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
         # add as many as were outgoing but maximum as many as can still be added
-        dAdd <- min(lAddArgs$dMaxIntr - length(lPltfTrial$lSnap$vIntrInclTimes), lPltfTrial$lSnap$dExitIntr)
+        dAdd <- min(lAddArgs$nMaxIntr - length(lPltfTrial$lSnap$vIntrInclTimes), lPltfTrial$lSnap$dExitIntr)
       } else {
         dAdd <- 0
       }
       return(dAdd)
     },
-    lAddArgs      = list(dMaxIntr = dMaxIntr)
+    lAddArgs      = list(nMaxIntr = nMaxIntr)
   )
   
 }
@@ -119,10 +121,22 @@ lNewIntr <- function(dMaxIntr) {
 # ISA in-trial-time can be fixed (e.g. 10 time units) or random (probability at every time step)
 # Number of ISAs at start can be chosen
 # Assumes that there are always enough ISAs in the pipeline
-plot.lNewIntr <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_param = 10, intr_start = 1, ...) {
+plot.lNewIntr <- function(x, dCurrTime = 1:52, cIntrTime = "fixed", dIntrTimeParam = 10, nIntrStart = 1, ...) {
   
   if (dCurrTime[1] != 1) {
     stop("First element of dCurrTime is not 1.")
+  }
+  
+  if (!cIntrTime      %in% c("fixed", "random") | 
+      !nIntrStart     == round(nIntrStart)
+      ) {
+    stop("ISA specific parameters misspecified.")
+  }
+  
+  if ((cIntrTime == "fixed"  & !dIntrTimeParam == round(dIntrTimeParam)) | 
+      (cIntrTime == "random" & !dplyr::between(dIntrTimeParam, 0, 1))
+  ) {
+    stop("ISA in trial time type and parameter mismatch.")
   }
   
   # Get all relevant Input Arguments
@@ -141,8 +155,8 @@ plot.lNewIntr <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_para
   f <- match.fun(x$fnNewIntr)
   
   # Number of ISAs at start
-  dActvIntr <- intr_start
-  vIntrInclTimes <- rep(0, intr_start)
+  dActvIntr <- nIntrStart
+  vIntrInclTimes <- rep(0, nIntrStart)
   
   # Initialize exit times
   dExitIntr <- 0
@@ -150,7 +164,7 @@ plot.lNewIntr <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_para
   
   # Initialize counts
   vActvIntr <- numeric(length = length(dCurrTime) + 1)
-  vActvIntr[1] <- intr_start
+  vActvIntr[1] <- nIntrStart
   vFinIntr <- numeric(length = length(dCurrTime) + 1)
   vFinIntr[1] <- 0
   
@@ -158,11 +172,11 @@ plot.lNewIntr <- function(x, dCurrTime = 1:52, intr_itt = "fixed", intr_itt_para
     
     # Check whether any ISAs are outgoing at this time point
     # Either fixed - then check inclusion times - or random - then draw randomly
-    if (intr_itt == "fixed") {
-      dExitIntr <- sum(vIntrInclTimes == (i - intr_itt_param))
+    if (cIntrTime == "fixed") {
+      dExitIntr <- sum(vIntrInclTimes == (i - dIntrTimeParam))
     }
-    if (intr_itt == "random") {
-      dExitIntr <- rbinom(1, length(vIntrInclTimes) - length(vIntrExitTimes), intr_itt_param)
+    if (cIntrTime == "random") {
+      dExitIntr <- rbinom(1, length(vIntrInclTimes) - length(vIntrExitTimes), dIntrTimeParam)
     }
     
     # Update vector of finished ISAs

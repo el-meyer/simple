@@ -15,7 +15,7 @@ new_lRecrPars(
 
 validate_lRecrPars(x)
 
-lRecrPars(x)
+lRecrPars(nPat)
 
 \method{plot}{lRecrPars}(x, dCurrTime = 1:52, ...)
 

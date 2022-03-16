@@ -1,12 +1,14 @@
 ---
-title: "Global Parameters Module Vignette"
+title: "Snapshot Parameters Module Vignette"
 output: 
-  rmarkdown::html_vignette:
+  rmarkdown::html_document:
       toc: true
+      toc_float: true
       toc_depth: 3
       fig_caption: yes
+      highlight: textmate
 vignette: >
-  %\VignetteIndexEntry{Global Parameters Module Vignette}
+  %\VignetteIndexEntry{Snapshot Parameters Module Vignette}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
   
@@ -15,45 +17,50 @@ vignette: >
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.height = 4, fig.width = 7)
 
-source("..\\R\\lGlobVars.R")
+source("..\\R\\lSnap.R")
 
 ```
 
 
 ## Introduction
 
-This vignette aims to describe the global variables module of the *simple* package.
-The purpose of the module is to gather and structure all global variables used across different modules. 
+This vignette aims to describe the snapshot variables module *lSnap* of the *simple* package.
+The purpose of the module is to summarize the platform trial at every time step ***t*** and thereby provide an easier interface for communication with the different modules. Without having to understand the whole simulation structure, users can rely on this snapshot to provide them with the most important information about the platform trajectory which they might want to access in different modules. Modification of this module is not recommended for most users, hence it will not be described here. Below is an overview of all the variables accessible and their definition.
 
-This module is not designed to be used by the user primarily, but to make the remaining modules more efficient in programming.
-Below all global variables used in different modules are displayed.
-
-Global variables represent a snapshot of the trial at the current time
-
-
-## Global variables
+## Snapshot variables
 
 **`dCurrTime`** 
 
-* Current time stamp
-* used in every module
+* Current time stamp ***t***
 
 **`dActvIntr`**  
 
-* Number of ISAs active at beginning of current platform time
-* used in *lIntrIncl*, *lRecrPars*
+* Current number of active (== enrolling) cohorts at time ***t***
   
 **`dExitIntr`**  
 
-* Number of outgoing ISAs at current platform time
-* used in *lIntrIncl*
+* Number of outgoing ISAs at time ***t***
   
 **`vIntrInclTimes`**  
 
-* Vector of all ISA inclusion times so far
-* used in *lIntrIncl*
+* Vector of all ISA inclusion times until time ***t***
   
 **`vIntrExitTimes`**  
 
-* Vector of all ISA exit times so far
-* used in *lIntrIncl*
+* Vector of all ISA exit (== end of enrollment) times until time ***t***
+
+**`vIntrDecTimes`**  
+
+* Vector of all ISA decision times until time ***t***
+
+**`vCurrAllocRatio`**  
+
+* Vector of between ISA allocation ratios at time ***t***
+
+**`vIntrDec`**  
+
+* Vector of all ISA decisions until time ***t***
+
+**`nAnalysisOver`**  
+
+* Total number of conducted analyses (interim and final) until time ***t***
