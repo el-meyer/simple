@@ -82,17 +82,22 @@ validate_lRecrPars <- function(x) {
 #' @export
 #' @rdname lRecrPars
 # Helper Function
-lRecrPars <- function(x) {
+lRecrPars <- function(nPat) {
   
   # Throw error if x is not a scalar
-  if (!(is.atomic(x) && length(x) == 1L)) {
-    stop("Suuplied input is not a scalar")
+  if (!(is.atomic(nPat) && length(nPat) == 1L)) {
+    stop("Supplied input is not a scalar")
+  }
+  
+  # Throw error if x is not an integer
+  if (!nPat == round(nPat)) {
+    stop("Supplied input is not an integer")
   }
   
   new_lRecrPars(
     # In easy Version: Simply number or participants
-    fnRecrProc = function(lPltfTrial, lAddArgs) {lAddArgs$x},
-    lAddArgs   = list(x = x)
+    fnRecrProc = function(lPltfTrial, lAddArgs) {lAddArgs$nPat},
+    lAddArgs   = list(nPat = nPat)
   )
 
 }

@@ -247,8 +247,7 @@ Below will be some tasks of increasing complexity to make you comfortable using 
 
 ## Tasks
 
-Try to use the module to program the following tasks according to the instructions. You can display the solution upon clicking the *code* button. The examples of the vignette may serve as a helping hand.
-The plots below show what the plotted output could look like.
+Try to use the module to program the following tasks according to the instructions. The solutions are given below. The examples of the vignette may serve as a helping hand. The plots below show what the plotted output could look like.
 
 **1. Create a scenario, where the number of patients recruited at every time step is taken from a binomial distribution with n = 20 and p = 0.2**
 
@@ -333,4 +332,4 @@ plot(
 ### Remarks
 Note that in scenario 1 the values of n and p could be directly written into the *rbinom* function without stating them in the *lAddArgs* argument. Perks of stating them in *lAddArgs* are the appearance in an overview you might want to print using summary() as well as efficiency if these arguments are used more than once or should be varied in a simulation study.
 
-The snapshot variables saved in the list *lPltfTrial* have a fixed name which can not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lPltfTrial* will contain an overview of all the snapshot variables used in any module.
+The snapshot variables saved in the list *lPltfTrial* have a fixed name which should not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lPltfTrial* will contain an overview of all the snapshot variables used in any module.

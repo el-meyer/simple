@@ -71,3 +71,7 @@ testthat::test_that("Plot function works without errors in default scenario", {
 testthat::test_that("Helper Function correctly throws an error if no scalar is specified", {
   testthat::expect_error(validate_lRecrPars(lRecrPars(list(1))))
 })
+
+testthat::test_that("Helper Function correctly throws an error if no integer is specified", {
+  testthat::expect_error(validate_lRecrPars(lRecrPars(1.2)))
+})

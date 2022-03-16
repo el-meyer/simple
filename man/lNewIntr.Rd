@@ -13,14 +13,14 @@ new_lNewIntr(fnNewIntr = function(lPltfTrial, lAddArgs) {
 
 validate_lNewIntr(x)
 
-lNewIntr(dMaxIntr)
+lNewIntr(nMaxIntr)
 
 \method{plot}{lNewIntr}(
   x,
   dCurrTime = 1:52,
-  intr_itt = "fixed",
-  intr_itt_param = 10,
-  intr_start = 1,
+  cIntrTime = "fixed",
+  dIntrTimeParam = 10,
+  nIntrStart = 1,
   ...
 )
 
@@ -29,7 +29,7 @@ lNewIntr(dMaxIntr)
 \arguments{
 \item{fnNewIntr}{Function that checks how many new ISAs should be added to the platform}
 
-\item{lAddArgs}{Further arguments used in fnAddNewIntr}
+\item{lAddArgs}{Further arguments used in fnNewIntr}
 }
 \description{
 Rules for ISA starting times of class lNewIntr

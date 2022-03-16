@@ -70,6 +70,8 @@ res <- fnRunSingleTrialSim(lPltfDsgn)
 
 res <- fnRunSingleTrialSim(lPltfDsgn, bCreateLog = FALSE, bRetainSnaps = FALSE)
 
+profvis::profvis({res <- fnRunSingleTrialSim(lPltfDsgn)})
+
 # Check if lPltfTrial is correctly initialized and closed
 
 
