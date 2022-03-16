@@ -33,6 +33,44 @@ new_lSnap <-  function(
 # Validator Function
 validate_lSnap <- function(x) {
   
+  # Error if list is not of class lSnap
+  if (class(x) != "lSnap") {
+    stop(
+      "Object is not of class lSnap."
+    )
+  }
+  
+  # Check whether correct names
+  if (!identical(names(x), c("fnSnap", "lAddArgs"))) {
+    stop(
+      "Wrong module attributes (too many, too few or wrong names)."
+    )
+  }
+  
+  # Errors if first element not function
+  if (!is.function(x[[1]])) {
+    stop(
+      "First element is not a function."
+    )
+  }
+  
+  # Error if second element not a list
+  if (!is.list(x[[2]])) {
+    stop(
+      "Second element is not a list."
+    )
+  }
+  
+  f <- match.fun(x[[1]])
+  f_args <- as.list(args(f))
+  
+  # Check input parameters of function
+  if (!"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
+    stop(
+      "Function not properly specified."
+    )
+  }
+  
 }
 #' @export
 #' @rdname lSnap
@@ -53,7 +91,7 @@ lSnap <- function() {
           dExitIntr       = 0,
           # vector of all ISA inclusion times so far
           vIntrInclTimes  = sapply(lPltfTrial$isa, function(x) x$nStartTime), 
-          # vector of all ISA exit times so far
+          # vector of all ISA exit times (==end enrollment) so far
           vIntrExitTimes  = sapply(lPltfTrial$isa, function(x) x$nEndEnrlTime),
           # vector of all ISA decision times so far
           vIntrDecTimes   = sapply(lPltfTrial$isa, function(x) x$nEndTime),
@@ -72,3 +110,17 @@ lSnap <- function() {
   )
   
 }
+
+#' @export
+#' @rdname lSnap
+# Summary Function
+summary.lSnap <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnSnap)))[2]
+  
+  cat("Specified accrual function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lAddArgs)
+}
+
