@@ -132,10 +132,12 @@ summary(x)
 
 ```{r}
 # every time step draw from poisson distribution with lambda = 50 / current time
-x <- new_lRecrPars(
+x <- 
+  new_lRecrPars(
   fnRecrProc = function(lPltfTrial, lAddArgs) {
     rpois(1, 50 / lPltfTrial$lSnap$dCurrTime)
-  }
+  },
+  lAddArgs = list()
 )
 
 plot(x)
@@ -159,7 +161,7 @@ x <-
       } else {
         rpois(1, lambda = lAddArgs$lambda1)
         }
-      },
+    },
     lAddArgs   = list(lambda1 = 2, lambda2 = 20)
   )
 plot(x)
@@ -234,7 +236,8 @@ x <-
   new_lRecrPars(
     fnRecrProc = function(lPltfTrial, lAddArgs) {
       100 * (1 + sin(lPltfTrial$lSnap$dCurrTime))
-    }
+    },
+    lAddArgs = list()
   )
 
 plot(x)
@@ -280,7 +283,8 @@ x <- new_lRecrPars(
     } else {
       n_pat <- 0
     }
-  }
+  },
+  lAddArgs = list()
 )
 
 plot(x)
