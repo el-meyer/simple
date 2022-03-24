@@ -132,3 +132,16 @@ lAddIntr <- function(nTrt) {
   )
   
 }
+
+#' @export
+#' @rdname lAddIntr
+# Summary Function
+summary.lAddIntr <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnAddIntr)))[2]
+  
+  cat("Specified accrual function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lAddArgs)
+}
