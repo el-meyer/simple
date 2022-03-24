@@ -35,6 +35,44 @@ new_lAddIntr <- function(
 # Validator Function
 validate_lAddIntr <- function(x) {
   
+  # Error if list is not of class lAddIntr
+  if (class(x) != "lAddIntr") {
+    stop(
+      "Object is not of class lAddIntr."
+    )
+  }
+  
+  # Check whether correct names
+  if (!identical(names(x), c("fnAddIntr", "lAddArgs"))) {
+    stop(
+      "Wrong module attributes (too many, too few or wrong names)."
+    )
+  }
+  
+  # Errors if first element not function
+  if (!is.function(x[[1]])) {
+    stop(
+      "First element is not a function."
+    )
+  }
+  
+  # Error if second element not a list
+  if (!is.list(x[[2]])) {
+    stop(
+      "Second element is not a list."
+    )
+  }
+  
+  f <- match.fun(x[[1]])
+  f_args <- as.list(args(f))
+  
+  # Check input parameters of function
+  if (!"lPltfDsgn" %in% names(f_args) | !"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
+    stop(
+      "Function not properly specified."
+    )
+  }
+  
 }
 #' @export
 #' @rdname lAddIntr
@@ -42,7 +80,7 @@ validate_lAddIntr <- function(x) {
 lAddIntr <- function(nTrt) {
   
   new_lAddIntr(
-    # In easy Version: Simply run lInitIntr and append to list
+    # In easy Version: Simply run lInitIntr on next ISA in ISA design list and append to platform trial list
     
     fnAddIntr = function(lPltfDsgn, lPltfTrial, lAddArgs) {
       
