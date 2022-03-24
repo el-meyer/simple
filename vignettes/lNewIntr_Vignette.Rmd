@@ -1,5 +1,5 @@
 ---
-title: "Intervention Inclusion Module Vignette"
+title: "lNewIntr Module Vignette"
 output: 
   rmarkdown::html_document:
       toc: true
@@ -389,4 +389,4 @@ plot(
 
 ### Remarks
 
-The snapshot variables saved in the list *lPltfTrial* have a fixed name which should not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lPltfTrial* will contain an overview of all the snapshot variables used in any module.
+The snapshot variables saved in the list *lPltfTrial* have a fixed name which should not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lSnap* will contain an overview of all the snapshot variables used in any module.
