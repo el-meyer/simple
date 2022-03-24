@@ -1,5 +1,5 @@
 ---
-title: "Snapshot Parameters Module Vignette"
+title: "lSnap Module Vignette"
 output: 
   rmarkdown::html_document:
       toc: true
@@ -25,7 +25,7 @@ source("..\\R\\lSnap.R")
 ## Introduction
 
 This vignette aims to describe the snapshot variables module *lSnap* of the *simple* package.
-The purpose of the module is to summarize the platform trial at every time step ***t*** and thereby provide an easier interface for communication with the different modules. Without having to understand the whole simulation structure, users can rely on this snapshot to provide them with the most important information about the platform trajectory which they might want to access in different modules. Modification of this module is not recommended for most users, hence it will not be described here. Below is an overview of all the variables accessible and their definition.
+The purpose of the module is to summarize the platform trial at every time step ***t*** and thereby provide an easier interface for communication with the different modules. Without having to understand the whole simulation structure, users can rely on this snapshot to provide them with the most important information about the platform trajectory which they might want to access in different modules. These summary variables can be thought of as global variables (although they are technically not global variables). Modification of this module is not recommended for most users, hence it will not be described here. Below is an overview of all the variables accessible and their definition.
 
 ## Snapshot variables
 

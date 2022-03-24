@@ -1,5 +1,5 @@
 ---
-title: "Recruitment Parameters Module Vignette"
+title: "lRecrPars Module Vignette"
 output: 
   rmarkdown::html_document:
       toc: true
@@ -336,4 +336,4 @@ plot(
 ### Remarks
 Note that in scenario 1 the values of n and p could be directly written into the *rbinom* function without stating them in the *lAddArgs* argument. Perks of stating them in *lAddArgs* are the appearance in an overview you might want to print using summary() as well as efficiency if these arguments are used more than once or should be varied in a simulation study.
 
-The snapshot variables saved in the list *lPltfTrial* have a fixed name which should not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lPltfTrial* will contain an overview of all the snapshot variables used in any module.
+The snapshot variables saved in the list *lPltfTrial* have a fixed name which should not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lSnap* will contain an overview of all the snapshot variables used in any module.
