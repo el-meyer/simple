@@ -79,6 +79,16 @@ validate_lAddIntr <- function(x) {
 # Helper Function
 lAddIntr <- function(nTrt) {
   
+  # Throw error if x is not a scalar
+  if (!(is.atomic(nTrt) && length(nTrt) == 1L)) {
+    stop("Supplied input is not a scalar")
+  }
+  
+  # Throw error if x is not an integer
+  if (!nTrt == round(nTrt)) {
+    stop("Supplied input is not an integer")
+  }
+  
   new_lAddIntr(
     # In easy Version: Simply run lInitIntr on next ISA in ISA design list and append to platform trial list
     
