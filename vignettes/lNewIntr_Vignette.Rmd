@@ -46,7 +46,7 @@ Apart from global variables, module specific variables can be added. Examples wh
 ## Functions
 
 ### Constructor Function `new_lNewIntr`
-The idea is to be able to include snapshot variables of the simulation as well as any additional variable you would want to impact your recruitment.
+The idea is to be able to include the platform snapshot as well as any additionally relevant variables outside the simulation.
 
 The central function of the module is `new_lNewIntr`. It defines the "rules" of intervention inclusion you want to implement in the simulation.
 

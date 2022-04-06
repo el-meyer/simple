@@ -12,7 +12,7 @@
 #' @rdname lAddPats
 # Constructor Function
 new_lAddPats <- function(
-  # Function that is used in updating between ISA allocation ratios
+  # Function that is used in adding patients to the respective ISAs
   fnAddPats = function(
     lPltfTrial, # List of current platform trial progress
     lAddArgs    # List of further arguments for this module
@@ -32,6 +32,44 @@ new_lAddPats <- function(
 #' @rdname lAddPats
 # Validator Function
 validate_lAddPats <- function(x) {
+  
+  # Error if list is not of class lAddPats
+  if (class(x) != "lAddPats") {
+    stop(
+      "Object is not of class lAddPats."
+    )
+  }
+  
+  # Check whether correct names
+  if (!identical(names(x), c("fnAddPats", "lAddArgs"))) {
+    stop(
+      "Wrong module attributes (too many, too few or wrong names)."
+    )
+  }
+  
+  # Errors if first element not function
+  if (!is.function(x[[1]])) {
+    stop(
+      "First element is not a function."
+    )
+  }
+  
+  # Error if second element not a list
+  if (!is.list(x[[2]])) {
+    stop(
+      "Second element is not a list."
+    )
+  }
+  
+  f <- match.fun(x[[1]])
+  f_args <- as.list(args(f))
+  
+  # Check input parameters of function
+  if (!"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
+    stop(
+      "Function not properly specified."
+    )
+  }
   
 }
 #' @export
@@ -60,4 +98,18 @@ lAddPats <- function() {
     lAddArgs   = list()
   )
   
+}
+
+
+#' @export
+#' @rdname lAddPats
+# Summary Function
+summary.lAddPats <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnAddPats)))[2]
+  
+  cat("Specified accrual function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lAddPats)
 }

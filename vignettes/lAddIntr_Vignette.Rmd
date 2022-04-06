@@ -45,7 +45,7 @@ Apart from the trial snapshot, module specific variables can be added. In the ca
 ## Functions
 
 ### Constructor Function
-The idea is to be able to include the platform snapshot as well as any additional variable you would want to impact your recruitment.
+The idea is to be able to include the platform snapshot as well as any additionally relevant variables outside the simulation.
 
 The central function of the module is `new_lAddIntr`. It defines the technical process of entering a new intervention into the ongoing trial.
 
