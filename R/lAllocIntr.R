@@ -77,3 +77,16 @@ lAllocIntr <- function() {
   )
   
 }
+
+#' @export
+#' @rdname lAllocIntr
+# Summary Function
+summary.lAddPats <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnAllocIntr)))[2]
+  
+  cat("Specified accrual function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lAllocIntr)
+}
