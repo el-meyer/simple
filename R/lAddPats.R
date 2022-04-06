@@ -99,3 +99,17 @@ lAddPats <- function() {
   )
   
 }
+
+
+#' @export
+#' @rdname lAddPats
+# Summary Function
+summary.lAddPats <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnAddPats)))[2]
+  
+  cat("Specified accrual function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lAddPats)
+}
