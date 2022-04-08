@@ -98,3 +98,5 @@ dat2 <-
 
 ### Mixing of ISAs with different endpoint types and data sharing is not possible via default functions
 
+### All plot functions of modules currently only work when dependency is only on snapshot variables
+
