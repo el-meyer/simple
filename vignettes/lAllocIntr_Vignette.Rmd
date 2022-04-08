@@ -1,0 +1,79 @@
+---
+title: "lAllocIntr Module Vignette"
+output: 
+  rmarkdown::html_document:
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      fig_caption: yes
+      highlight: textmate
+vignette: >
+  %\VignetteIndexEntry{lAllocIntr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height = 6, fig.width = 7)
+
+source("..\\R\\lAllocIntr.R")
+
+```
+
+# Introduction
+
+This vignette aims to describe the module *lAllocIntr* of the *simple* package.
+The purpose of the module is to facilitate between ISA allocation of newly accrued patients. Please note the intended purpose of this module is to execute the between ISA allocation weights computed by the `lUpdIntrAlloc` module. They can however be overwritten by modifying this module.
+
+## Function arguments
+
+As input variables to determine the between ISA allocation ratio at time **t**, the module will take the platform trial status at time **t**, as well as arguments specific to the between ISA allocation.
+
+#### Current status of platform trial `lPltfTrial` 
+
+This is a snapshot image of the current platform trial status and changes during the simulation. The current time or number of active arms could be examples of variables of interest which we would like to access.
+
+#### Additional arguments `lAddArgs`
+
+Apart from the trial snapshot, module specific variables can be added.
+
+## Functions
+
+### Constructor Function
+The idea is to be able to include the platform snapshot as well as any additional variable you would want to impact the between ISA allocation.
+
+The central function of the module is `new_lAllocIntr`. It defines the "rules" of recruitment you want to implement in the simulation.
+
+```{r}
+new_lAllocIntr()
+```
+
+**`$fnAllocIntr`**
+The necessary input is a function `fnAllocIntr` determining how allocation ratios should be determined at a specific point in time. In the function call you input the current platform trial status to be used in the `lPltfTrial` argument and determine the list with further arguments which affect this algorithm in `lAddArgs`. By default, only the computed weights of the `lUpdIntrAlloc` module are used.
+Within the curly braces `{}` you execute the function operations.
+
+**`$lAddArgs`**
+Here you can supply the list with additional arguments, which are accessed in the function above.
+
+
+### Helper function
+
+It is recommended to use the helper function `lAllocIntr`. By default, only the computed weights of the `lUpdIntrAlloc` module are used.
+```{r}
+lAllocIntr
+```
+
+No input argument to this function is needed.
+
+
+### Summary
+
+The summary call provides information about the input you provided. It gives an overview about snapshot and additional variables as well the function that was implemented.
+
+```{r}
+summary(lAllocIntr())
+```
+
+# Final remarks
+
+It is recommended to use the default function.
