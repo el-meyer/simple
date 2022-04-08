@@ -65,7 +65,7 @@ validate_lAllocIntr <- function(x) {
   f_args <- as.list(args(f))
   
   # Check input parameters of function
-  if (!"lPltfDsgn" %in% names(f_args) | !"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
+  if (!"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
     stop(
       "Function not properly specified."
     )
@@ -119,7 +119,7 @@ lAllocIntr <- function() {
 #' @export
 #' @rdname lAllocIntr
 # Summary Function
-summary.lAddPats <- function(x, ...) {
+summary.lAllocIntr <- function(x, ...) {
   
   body <- as.character(body(match.fun(x$fnAllocIntr)))[2]
   
