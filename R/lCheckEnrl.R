@@ -33,6 +33,44 @@ new_lCheckEnrl <- function(
 # Validator Function
 validate_lCheckEnrl <- function(x) {
   
+  # Error if list is not of class lCheckEnrl
+  if (class(x) != "lCheckEnrl") {
+    stop(
+      "Object is not of class lCheckEnrl."
+    )
+  }
+  
+  # Check whether correct names
+  if (!identical(names(x), c("fnCheckEnrl", "lAddArgs"))) {
+    stop(
+      "Wrong module attributes (too many, too few or wrong names)."
+    )
+  }
+  
+  # Errors if first element not function
+  if (!is.function(x[[1]])) {
+    stop(
+      "First element is not a function."
+    )
+  }
+  
+  # Error if second element not a list
+  if (!is.list(x[[2]])) {
+    stop(
+      "Second element is not a list."
+    )
+  }
+  
+  f <- match.fun(x[[1]])
+  f_args <- as.list(args(f))
+  
+  # Check input parameters of function
+  if (!"lPltfTrial" %in% names(f_args) | !"lAddArgs" %in% names(f_args)) {
+    stop(
+      "Function not properly specified."
+    )
+  }
+  
 }
 #' @export
 #' @rdname lCheckEnrl
@@ -76,4 +114,17 @@ lCheckEnrl <- function() {
     lAddArgs   = list()
   )
   
+}
+
+#' @export
+#' @rdname lCheckEnrl
+# Summary Function
+summary.lCheckEnrl <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnCheckEnrl)))[2]
+  
+  cat("Specified accrual function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lCheckEnrl)
 }
