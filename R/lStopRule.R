@@ -36,7 +36,7 @@ validate_lStopRule <- function(x) {
   
   # Error if list is not of class lStopRule
   if (class(x) != "lStopRule") {
-    stop(
+    stop(                                                                                                                   
       "Object is not of class lStopRule."
     )
   }
@@ -97,4 +97,18 @@ lStopRule <- function(nWeeks = NULL, bNoActive = NULL) {
     lAddArgs   = list(nWeeks = nWeeks, bNoEnrol = bNoActive)
   )
 
+}
+
+
+#' @export
+#' @rdname lStopRule
+# Summary Function
+summary.lStopRule <- function(x, ...) {
+  
+  body <- as.character(body(match.fun(x$fnStopRule)))[2]
+  
+  cat("Specified accrual function: \n")
+  print(body)
+  cat("\n Specified arguments: \n")
+  print(x$lAddArgs)
 }
