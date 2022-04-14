@@ -78,6 +78,28 @@ validate_lStopRule <- function(x) {
 # Helper Function
 lStopRule <- function(nWeeks = NULL, bNoActive = NULL) {
   
+  if (is.null(nWeeks) & is.null(bNoActive)) {
+    stop("No valid stopping rules were specified.")
+  }
+  
+  if (!is.null(nWeeks)) {
+    # Throw error if x is not a scalar
+    if (!(is.atomic(nWeeks) && length(nWeeks) == 1L)) {
+      stop("Supplied input is not a scalar")
+    }
+    
+    # Throw error if x is not an integer
+    if (!nWeeks == round(nWeeks)) {
+      stop("Supplied input is not an integer")
+    }
+  } else {
+    if (!bNoActive) {
+      stop("bNoActive can only be TRUE or NULL.")
+    }
+  }
+  
+  
+  
   new_lStopRule(
     
     fnStopRule = function(lPltfTrial, lAddArgs) {
@@ -85,11 +107,9 @@ lStopRule <- function(nWeeks = NULL, bNoActive = NULL) {
       if (!is.null(nWeeks)) {
         # Stop after x weeks
         ret <- lPltfTrial$lSnap$dCurrTime >= lAddArgs$nWeeks
-      } else if (!is.null(bNoActive)) {
+      } else if (bNoActive) {
         # Stop if all have final decision
         ret <- all(!is.na(sapply(lPltfTrial$isa, function(x) x$cEndReason)))
-      } else {
-        stop("No valid stopping rule was specified.")
       }
       
       return(ret)
