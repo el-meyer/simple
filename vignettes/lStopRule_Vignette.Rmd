@@ -1,0 +1,140 @@
+---
+title: "lStopRule Module Vignette"
+output: 
+  rmarkdown::html_document:
+      toc: true
+      toc_float: true
+      toc_depth: 3
+      fig_caption: yes
+      highlight: textmate
+vignette: >
+  %\VignetteIndexEntry{Intervention Inclusion Module Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+  
+
+---
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height = 4, fig.width = 7)
+
+source("..\\R\\lStopRule.R")
+```
+
+
+## Introduction
+
+This vignette aims to describe the module *lStopRule* of the *simple* package.
+The purpose of the module is to control under which conditions the platform trial simulation stops. 
+
+## Function arguments
+
+As input variables to determine whether the platform trial shoudl end at time **t**, the module will take the platform trial status at time **t**, as well as arguments specific to the intervention inclusion.
+
+#### Current status of platform trial `lPltfTrial` 
+
+This is a snapshot image of the current platform trial status and changes during the simulation. The current time or number of ISAs with a final decision could be examples of variables of interest which we would like to access.
+ 
+
+#### Additional arguments `lAddArgs`
+
+Apart from global variables, module specific variables can be added. 
+
+## Functions
+
+### Constructor Function `new_lStopRule`
+The idea is to be able to include the platform snapshot as well as any additionally relevant variables outside the simulation.
+
+The central function of the module is `new_lStopRule`. It defines the "rules" of when to stop the platform trial simulation.
+
+```{r}
+new_lStopRule()
+```
+
+**`$fnStopRule`**
+The necessary input is a function `fnStopRule` checking if the platform trial should be stopped. In the function call you input the snapshot variables to be used in the `lPltfTrial` argument and determine the list with further arguments which affect your algorithm in `lAddArgs`. 
+Within the curly braces `{}` you execute the function operations.
+
+**`$lAddArgs`**
+Here you can supply the list with additional arguments, which are accessed in the function above.
+
+
+### Helper function `lStopRule`
+
+If you do not want to think about an inclusion strategy for interventions, you can use the helper function `lStopRule`. 
+```{r}
+lStopRule
+```
+
+There are two default options: Stopping after a certain number of time units (as we mostly think of a week as one time unit, this parameter is called `nWeeks`) or after all ISAs that were entered into the platform have a final decision and therefore no ISA is active anymore (`bNoActive`). 
+
+
+### Summary
+
+The summary call provides information about the input you provided. It gives an overview about snapshot and additional variables as well the function that was implemented.
+
+```{r}
+summary(lStopRule(bNoActive = TRUE))
+```
+
+
+## Examples
+
+1. **Stopping after a certain number of time units**
+
+Stopping after 100 time units:
+
+```{r}
+
+x <- lStopRule(nWeeks = 100)
+summary(x)
+
+```
+
+***
+
+2. **Stopping when no ISA is active anymore**
+
+
+```{r}
+
+x <- lStopRule(bNoActive = TRUE)
+summary(x)
+
+```
+
+***
+
+3. **Stop after the first postitive decision has been made for any ISA**
+
+Please note that the way these stopping rules are dependent on how "positive decision" was defined in the `lSynthRes` modules. We assume here (and this is set by default) that a positive decision is coded by a "Efficacy" string in the object `cEndReason` object of the ISAs.
+
+```{r}
+
+# Check if for any ISA a positive decision was made
+
+x <- 
+  new_lStopRule(
+    fnStopRule  = function(lPltfTrial, lAddArgs) {
+      
+      ret <- 
+        ifelse(
+          any(
+            sapply(lPltfTrial$isa, function(x) x$cEndReason) == "Efficacy", 
+            na.rm = TRUE
+            ), 
+          1, 
+          0
+        )
+      
+      return(ret)
+      
+    },
+    lAddArgs      = list()
+  )
+
+```
+
+
+### Remarks
+
+The snapshot variables saved in the list *lPltfTrial* have a fixed name which should not be changed as it is implemented in many different modules. As mentioned above the vignette of the module *lSnap* will contain an overview of all the snapshot variables used in any module.
