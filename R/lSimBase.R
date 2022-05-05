@@ -40,11 +40,9 @@ validate_lSimBase <- function(x) {
 lSimBase <- 
   function(
     vars = list(
-      list("age", "max(rnorm(n, 45, 10), 18)"),
-      list("sex", "sample(0:1, n, replace = TRUE)"),
       list("time", "t")
     ),
-    names = c("Age", "Sex", "InclusionTime")
+    names = c("InclusionTime")
   ) {
   
   # By default, use genpat function

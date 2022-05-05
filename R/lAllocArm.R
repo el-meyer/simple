@@ -52,20 +52,34 @@ lAllocArm <- function() {
         length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)
         ) {
         
-        # Assign Arm Names from vRandList
-        lPltfTrial$isa[[lAddArgs$current_id]]$tempPats$Arm <- 
-          c(
-            lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[1:length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)],
+        # What to do if no randomizations left?
+        if (length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList) == 0) {
+          arms <-             
             rep(
               "NA", 
-              nrow(lPltfTrial$isa[[lAddArgs$current_id]]$tempPats) - 
-                length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)
-            )
+              nrow(lPltfTrial$isa[[lAddArgs$current_id]]$tempPats)
           )
+        } else {
+          # at least randomization left
+          
+          arms <-           
+            c(
+              lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[1:length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)],
+              rep(
+                "NA", 
+                nrow(lPltfTrial$isa[[lAddArgs$current_id]]$tempPats) - 
+                  length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList)
+              )
+            )
+          
+          # Remove randomizations from vRandList
+          lPltfTrial$isa[[lAddArgs$current_id]]$vRandList <- 
+            lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[-(1:length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList))]
+          
+        }
         
-        # Remove randomizations from vRandList
-        lPltfTrial$isa[[lAddArgs$current_id]]$vRandList <- 
-          lPltfTrial$isa[[lAddArgs$current_id]]$vRandList[-(1:length(lPltfTrial$isa[[lAddArgs$current_id]]$vRandList))]
+        # Assign Arm Names from vRandList
+        lPltfTrial$isa[[lAddArgs$current_id]]$tempPats$Arm <- arms
         
         print(
           paste0(

@@ -43,10 +43,12 @@ lSynthRes <- function(alpha = 0.05) {
   new_lSynthRes(
     fnSynthRes = function(lPltfTrial, lAddArgs) {
       
+      nAnls <- length(lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses)
+      
       # It is expected that in lAddArgs we will find the current ID under "current_id"
-      if (length(lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses) == 1 & is.na(lPltfTrial$isa[[lAddArgs$current_id]]$cEndReason)) {
+      if (nAnls > 0 & is.na(lPltfTrial$isa[[lAddArgs$current_id]]$cEndReason)) {
        
-        if (lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses[[1]]$results < lAddArgs$alpha) {
+        if (lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses[[nAnls]]$results < lAddArgs$alpha) {
           lPltfTrial$isa[[lAddArgs$current_id]]$cEndReason <- "Efficacy"
         } else {
           lPltfTrial$isa[[lAddArgs$current_id]]$cEndReason <- "Futility"
