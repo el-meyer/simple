@@ -200,7 +200,7 @@ lAnls <- function(
         
         # create final dataset
         group2df <- 
-          plyr::rbind.fill(group1df, group1df_outside_intr)
+          plyr::rbind.fill(group2df, group2df_outside_intr)
         
       }
       
@@ -209,6 +209,9 @@ lAnls <- function(
         rbind(
           group1df,
           group2df
+        ) %>% 
+        dplyr::filter(
+          OutObsTime <= lPltfTrial$lSnap$dCurrTime
         )
       
       results <- match.fun(analysis_function)(analysis_data)
