@@ -162,15 +162,15 @@ fnRunSingleTrialSim <-
     # Create Summary as initial return object
     ret <-
       list(
-        SUMMARY   = lFinalSnap
+        lFinalSnap   = lFinalSnap
       )
     
     # Include List of Snapshots or extra output if needed
     if (bRetainSnaps) {
-      ret$SNAPSHOTS <- lSnapshots
+      ret$lSnapshots <- lSnapshots
     }
     if (!is.null(out)) {
-      ret$OUTPUT <- out
+      ret$lSummary <- out
     }
     
     sink()

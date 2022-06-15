@@ -1,6 +1,6 @@
-#' Check ISA Enrllment
+#' Check ISA Enrollment
 #' 
-#' Functions and rules for within ISA checking of Enrllment of class lCheckEnrl
+#' Functions and rules for within ISA checking of Enrollment of class lCheckEnrl
 #' 
 #' @param 
 #' 
@@ -12,7 +12,7 @@
 #' @rdname lCheckEnrl
 # Constructor Function
 new_lCheckEnrl <- function(
-  # Function that is used in checking ISA Enrllment
+  # Function that is used in checking ISA Enrollment
   fnCheckEnrl = function(
     lPltfTrial, # List of current platform trial progress
     lAddArgs    # List of further arguments for this module
@@ -22,7 +22,7 @@ new_lCheckEnrl <- function(
 ) {
   structure(
     list(
-      fnCheckEnrl  = fnCheckEnrl,
+      fnCheckEnrl   = fnCheckEnrl,
       lAddArgs      = lAddArgs
     ),
     class           = "lCheckEnrl"
@@ -82,7 +82,7 @@ lCheckEnrl <- function() {
       
       # It is expected that in lAddArgs we will find the current ID under "current_id"
       
-      # By default just check if final sample size was reached
+      # By default just check if final sample size was reached OR the ISA already has a stopping reason or nEndTime
       
       if (
         lPltfTrial$isa[[lAddArgs$current_id]]$nMaxNIntr <= 
@@ -106,6 +106,36 @@ lCheckEnrl <- function() {
           
         }
         
+        # If stopping either because an end reason already exists or the time has been reached
+        
+      } else {
+        
+        if (!is.na(lPltfTrial$isa[[lAddArgs$current_id]]$cEndReason) |
+            !is.na(lPltfTrial$isa[[lAddArgs$current_id]]$nEndTime)
+            ) {
+          
+          if (lPltfTrial$isa[[lAddArgs$current_id]]$bEnrl) {
+            # If this is the first time unit in which the enrollment is not active
+            print(
+              paste0(
+                "ISA ",
+                lAddArgs$current_id,
+                " has stopped enrollment at time ",
+                lPltfTrial$lSnap$dCurrTime
+              )
+            )
+            
+            lPltfTrial$lSnap$dExitIntr <- lPltfTrial$lSnap$dExitIntr + 1
+            lPltfTrial$isa[[lAddArgs$current_id]]$bEnrl <- FALSE
+            lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime <- lPltfTrial$lSnap$dCurrTime
+            
+            if (is.na(lPltfTrial$isa[[lAddArgs$current_id]]$cEndReason)) {
+              lPltfTrial$isa[[lAddArgs$current_id]]$cEndReason <- "Other"
+            }
+            
+          }
+          
+        }
       }
       
       return(lPltfTrial)
