@@ -107,7 +107,7 @@ Bayes_Fut2
   
   # Create all sort of warning messages and stop messages
   
-  # Check if length of rr_comb etc are either one or exactly mac_cohorts
+  # Check if length of rr_comb etc are either one or exactly max_cohorts
   
   # Get Vector of response probabilities
   if (length(rr_comb1) == 1) {
@@ -238,7 +238,7 @@ Bayes_Fut2
                 0
               )
             
-            # Get multinormal probabilities
+            # Get multinominal probabilities
             new_probs <- fun_multnom(prob1, prob2, lAddArgs$dCorr)
             
             # Draw from multinomial distribution
@@ -753,6 +753,115 @@ Bayes_Fut2
       )
   }
   
+  lPltfSummary_WP6 <- 
+    new_lPltfSummary(
+      
+      # By default do nothing extra
+      fnPltfSummary = function(lPltfTrial, lAddArgs) {
+        
+        # Define truth via:
+        # Is RR1 > RR2
+        
+        truth <- rep(NA, length(lPltfTrial$isa))
+
+        for (i in 1:length(truth)) {
+          if (composite == "or") {
+            truth[i] <-
+              (lAddArgs$rr_comb1_vec[i] > lAddArgs$rr_plac1_vec[i])|
+              (lAddArgs$rr_comb2_vec[i] > lAddArgs$rr_plac2_vec[i])
+          } else if (composite == "and") {
+            truth[i] <-
+              (lAddArgs$rr_comb1_vec[i] > lAddArgs$rr_plac1_vec[i])&
+              (lAddArgs$rr_comb2_vec[i] > lAddArgs$rr_plac2_vec[i])
+          }
+        }
+
+        # Check which decisions were correct positives, false positives, etc.
+        cp <- sum(sapply(lPltfTrial$isa, function(x) x$cEndReason) == "Efficacy" &  truth)
+        fp <- sum(sapply(lPltfTrial$isa, function(x) x$cEndReason) == "Efficacy" & !truth)
+        cn <- sum(sapply(lPltfTrial$isa, function(x) x$cEndReason) == "Futility" & !truth)
+        fn <- sum(sapply(lPltfTrial$isa, function(x) x$cEndReason) == "Futility" &  truth)
+
+        # Prepare return list
+        ret <- list(
+          Decision               = sapply(lPltfTrial$isa, function(x) x$cEndReason),
+          Start_Time             = sapply(lPltfTrial$isa, function(x) x$nStartTime),
+          RR_Comb1               = lAddArgs$rr_comb1_vec,
+          RR_Comb2               = lAddArgs$rr_comb2_vec,
+          RR_Plac1               = lAddArgs$rr_plac1_vec,
+          RR_Plac2               = lAddArgs$rr_plac2_vec,
+          N_Cohorts              = length(lPltfTrial$isa),
+          # This gets all allocated patients (more patients can be allocated than have outcomes observed)
+          ISA_N_Alloc            = sapply(
+            lPltfTrial$isa, 
+            function(x) nrow(do.call(rbind.data.frame, x$lPats))
+          ),
+          # This gets all patients with observed outcomes
+          ISA_N_Obs              = sapply(
+            lPltfTrial$isa, 
+            function(x) nrow(subset(do.call(rbind.data.frame, x$lPats), !is.na(OutObsTime)))
+          ),
+          
+          Total_N_Alloc          = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) nrow(do.call(rbind.data.frame, x$lPats))
+          ), na.rm = TRUE),
+          Total_N_Obs            = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) nrow(subset(do.call(rbind.data.frame, x$lPats), !is.na(OutObsTime)))
+          ), na.rm = TRUE),
+          Total_Time             = lPltfTrial$lSnap$dCurrTime,
+          TP                     = cp,
+          FP                     = fp,
+          TN                     = cn,
+          FN                     = fn,
+          FDR_Trial              = ifelse(!is.na(fp/(cp + fp)), fp/(cp + fp), NA),
+          PTP_Trial              = ifelse(!is.na(cp/(cp + fn)), cp/(cp + fn), NA),
+          PTT1ER_Trial           = ifelse(!is.na(fp/(fp + cn)), fp/(fp + cn), NA),
+          any_P                  = as.numeric((cp + fp) > 0),
+
+          # Final Decision is decision
+          # Length of lAnalyses shows how many analyses were necessary to get this decision
+          
+          Intx1_GO                = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) (x$cEndReason == "Efficacy") & (length(x$lAnalyses) == 1)
+          ), na.rm = TRUE),
+          Intx1_STOP              = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) (x$cEndReason == "Futility") & (length(x$lAnalyses) == 1)
+          ), na.rm = TRUE),
+          
+          Intx2_GO                = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) (x$cEndReason == "Efficacy") & (length(x$lAnalyses) == 2)
+          ), na.rm = TRUE),
+          Intx2_STOP              = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) (x$cEndReason == "Futility") & (length(x$lAnalyses) == 2)
+          ), na.rm = TRUE),
+          
+          Intx3_GO                = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) (x$cEndReason == "Efficacy") & (length(x$lAnalyses) == 3)
+          ), na.rm = TRUE),
+          Intx3_STOP              = sum(sapply(
+            lPltfTrial$isa, 
+            function(x) (x$cEndReason == "Futility") & (length(x$lAnalyses) == 3)
+          ), na.rm = TRUE)
+        )
+
+        return(ret)
+        
+      },
+      # Pass true response rates to summary function
+      lAddArgs   = list(
+        rr_comb1_vec = rr_comb1_vec,
+        rr_comb2_vec = rr_comb2_vec,
+        rr_plac1_vec = rr_plac1_vec,
+        rr_plac2_vec = rr_plac2_vec
+      )
+    )
   
   
   lNewIntr_fixed <- 
@@ -777,7 +886,7 @@ Bayes_Fut2
       lAllocIntr    = lAllocIntr(),
       lIntrDsgn     = lIntrDsgn,
       lNewIntr      = lNewIntr_fixed,
-      lPltfSummary  = lPltfSummary(),
+      lPltfSummary  = lPltfSummary_WP6,
       lRecrPars     = lRecrPars(accrual_param),
       lSimBase      = lSimBase(),
       lSnap         = lSnap(),

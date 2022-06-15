@@ -100,3 +100,4 @@ dat2 <-
 
 ### All plot functions of modules currently only work when dependency is only on snapshot variables
 
+### We expect distinct, monotounsly increasing analysis time points

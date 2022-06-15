@@ -39,6 +39,31 @@ validate_lCheckAnlsMstn <- function(x) {
 # Helper Function
 lCheckAnlsMstn <- function(bInclude = TRUE, vInfTimes = c(1), column = "OutObsTime") {
   
+  # Make sure vInfTimes is strictly monotonously increasing and in the range of 0 to 1
+  
+  if (length(vInfTimes) > 1) {
+    
+    if (!all(diff(vInfTimes) > 0)) {
+      
+      stop("Vector vInfTimes is not strictly monotonously increasing.")
+      
+    }
+   
+    if (max(vInfTimes) > 1 ) {
+      stop("Last Analysis Time Point is > 1.")
+    }
+    
+    if (min(vInfTimes) < 0 ) {
+      stop("First Analysis Time Point is < 0.")
+    }
+     
+  } else {
+    
+    stop("A single analysis time point != 1 was chosen.")
+    
+  }
+  
+  
   new_lCheckAnlsMstn(
     fnCheckAnlsMstn = function(lPltfTrial, lAddArgs) {
       
