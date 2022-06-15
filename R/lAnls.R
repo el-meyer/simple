@@ -217,15 +217,10 @@ lAnls <- function(
       results <- match.fun(analysis_function)(analysis_data)
       
       # Save Analysis Dataset as well
-      lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses <- 
-        c(
-          lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses,
-          list(
-            list(
-              results = results,
-              analysis_data = analysis_data
-            )
-          )
+      lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses[[lAddArgs$nMstn]] <- 
+        list(
+          results = results,
+          analysis_data = analysis_data
         )
       
       print(
