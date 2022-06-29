@@ -44,9 +44,7 @@ lCheckAnlsMstn <- function(bInclude = TRUE, vInfTimes = c(1), column = "OutObsTi
   if (length(vInfTimes) > 1) {
     
     if (!all(diff(vInfTimes) > 0)) {
-      
       stop("Vector vInfTimes is not strictly monotonously increasing.")
-      
     }
    
     if (max(vInfTimes) > 1 ) {
@@ -59,7 +57,9 @@ lCheckAnlsMstn <- function(bInclude = TRUE, vInfTimes = c(1), column = "OutObsTi
      
   } else {
     
-    stop("A single analysis time point != 1 was chosen.")
+    if (vInfTimes != c(1)) {
+      stop("A single analysis time point != 1 was chosen.")
+    }
     
   }
   
