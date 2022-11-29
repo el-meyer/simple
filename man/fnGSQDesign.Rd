@@ -17,9 +17,11 @@ fnGSQDesign(
   nIntrInitial = 1,
   bReplaceIntr = FALSE,
   dProbReplaceIntr = 1,
-  nWeeksNewIntr = NULL,
+  nWeeksNewIntr = NA,
   dProbWeeksNewIntr = 1,
-  cAllocRatio = "balanced"
+  cAllocRatio = "balanced",
+  vEffBounds = c(0.05),
+  vFutBounds = c(0.05)
 )
 }
 \arguments{
@@ -56,6 +58,12 @@ If NULL, treatments are not included based on time. Default is NULL.}
 
 \item{cAllocRatio}{How are patients allocated to treatments. Options are "balanced" or "squareroot".
 Default is balanced.}
+
+\item{vEffBounds}{Vector of same length as vAnalysisTimes that gives the efficacy bounds at the
+different analysis time points}
+
+\item{vFutBounds}{Vector of same length as vAnalysisTimes that gives the futility bounds at the
+different analysis time points}
 }
 \value{
 Object of class lPltfDsgn to be supplied to fnRunSingleTrialSim or modified later
@@ -66,19 +74,29 @@ Creates a simple platform trial design using a GSQ plan and continuous endpoints
 \examples{
 
 lPltfDsgn <- 
- fnGSQDesign(
-   effect_scenario = 2,
-   recr_speed = 28,
-   ISA_add = 2,
-   max_time = 0,
-   futility_stop = TRUE,
-   ISA_start = 8,
-   lag_units = 1
+ fnGSQDesign( 
+  dMuC              = 0,
+  dSigC             = 1,
+  vMuT              = 0.25,
+  vSigT             = 1,
+  nOutObsLag        = 2,
+  nRecrSpeed        = 5,
+  nMaxISA           = 4,
+  nMaxNIntr         = 50,
+  vAnalysisTimes    = c(0.5, 1),
+  nIntrInitial      = 1,
+  bReplaceIntr      = TRUE,
+  dProbReplaceIntr  = 0.5,
+  nWeeksNewIntr     = 2,
+  dProbWeeksNewIntr = 0.5,
+  cAllocRatio       = "balanced",
+  vEffBounds        = c(0.01, 0.04),
+  vFutBounds        = c(0.25, 0.05)
  )
 
 out1 <- fnRunSingleTrialSim(lPltfDsgn, bRetainSnaps = TRUE)
 ocs1 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 5)
 ocs2 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 300, nCores = 7)
-out2 <- fnRunSingleTrialSim(fnSimpleDesign())
+out2 <- fnRunSingleTrialSim(fnGSQDesign())
 
 }

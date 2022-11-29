@@ -54,7 +54,7 @@ lPltfDsgn <-
     lAddPats      = lAddPats(),
     lAllocIntr    = lAllocIntr(),
     lIntrDsgn     = lIntrDsgn,
-    lNewIntr      = lNewIntr(nMaxIntr = 5, nStartIntr = 2),
+    lNewIntr      = lNewIntr(nMaxIntr = 5, nStartIntr = 2, vArrTimes = c(1,1,1,4,5)),
     lPltfSummary  = lPltfSummary(),
     lRecrPars     = lRecrPars(5),
     lSimBase      = lSimBase(),

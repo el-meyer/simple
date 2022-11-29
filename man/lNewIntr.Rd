@@ -13,7 +13,7 @@ new_lNewIntr(fnNewIntr = function(lPltfTrial, lAddArgs) {
 
 validate_lNewIntr(x)
 
-lNewIntr(nMaxIntr)
+lNewIntr(nMaxIntr, nStartIntr, vArrTimes = NULL)
 
 \method{plot}{lNewIntr}(
   x,
