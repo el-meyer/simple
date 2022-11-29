@@ -14,7 +14,7 @@ new_lAddIntr(
 
 validate_lAddIntr(x)
 
-lAddIntr(nTrt)
+lAddIntr()
 
 \method{summary}{lAddIntr}(x, ...)
 }

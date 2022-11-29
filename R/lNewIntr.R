@@ -82,7 +82,26 @@ validate_lNewIntr <- function(x) {
 #' @export
 #' @rdname lNewIntr
 # Helper Function
-lNewIntr <- function(nMaxIntr, nStartIntr) {
+lNewIntr <- function(nMaxIntr, nStartIntr, vArrTimes = NULL) {
+  
+  # Vector of arrival times can be unsorted
+  
+  if (!is.null(vArrTimes)) {
+    # Throw error if vArrTimes is not a vector of integers
+    if (!(is.atomic(vArrTimes) && typeof(vArrTimes) == "double")) {
+      stop("Supplied vector is not scalar")
+    }
+    
+    # Throw error if vArrTimes is not a vector of integers
+    if (!all(vArrTimes == round(vArrTimes))) {
+      stop("Supplied vector is not scalar")
+    }
+    
+    # Throw error if not at least one entry is 1
+    if (sum(vArrTimes == 1) == 0) {
+      stop("At least one ISA needs to start in the beginning of the platform")
+    }
+  }
   
   # Throw error if x is not a scalar
   if (!(is.atomic(nMaxIntr) && length(nMaxIntr) == 1L)) {
@@ -90,7 +109,7 @@ lNewIntr <- function(nMaxIntr, nStartIntr) {
   }
   
   # Throw error if x is not an integer
-  if (!nMaxIntr == round(nMaxIntr)) {
+  if (nMaxIntr != round(nMaxIntr)) {
      stop("Supplied input is not an interger")
   }
   
@@ -114,16 +133,23 @@ lNewIntr <- function(nMaxIntr, nStartIntr) {
   # Maximum x ISAs in total
   new_lNewIntr(
     fnNewIntr  = function(lPltfTrial, lAddArgs) {
-      # have special rules for first time unit
-      if (lPltfTrial$lSnap$dCurrTime == 1) {
-        dAdd <- lAddArgs$nStartIntr
-        # if both an ISA was outgoing in this time step and the maximum number has not yet been reached
-        # add as many ISAs as were outgoing
-      } else if (lPltfTrial$lSnap$dExitIntr > 0 & length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
-        # add as many as were outgoing but maximum as many as can still be added
-        dAdd <- min(lAddArgs$nMaxIntr - length(lPltfTrial$lSnap$vIntrInclTimes), lPltfTrial$lSnap$dExitIntr)
+      
+      # either have vector of arrival times directly specified, or not
+      if (is.null(vArrTimes)) {
+        # have special rules for first time unit
+        if (lPltfTrial$lSnap$dCurrTime == 1) {
+          dAdd <- lAddArgs$nStartIntr
+          # if both an ISA was outgoing in this time step and the maximum number has not yet been reached
+          # add as many ISAs as were outgoing
+        } else if (lPltfTrial$lSnap$dExitIntr > 0 & length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
+          # add as many as were outgoing but maximum as many as can still be added
+          dAdd <- min(lAddArgs$nMaxIntr - length(lPltfTrial$lSnap$vIntrInclTimes), lPltfTrial$lSnap$dExitIntr)
+        } else {
+          dAdd <- 0
+        }
+        # if vector of arrival times directly specified
       } else {
-        dAdd <- 0
+        dAdd <- sum(lPltfTrial$lSnap$dCurrTime == vArrTimes)
       }
 
       return(dAdd)
