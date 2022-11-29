@@ -4,6 +4,7 @@
 \alias{lAddIntr}
 \alias{new_lAddIntr}
 \alias{validate_lAddIntr}
+\alias{summary.lAddIntr}
 \title{Addition of ISAs into ongoing platform trial}
 \usage{
 new_lAddIntr(
@@ -14,6 +15,8 @@ new_lAddIntr(
 validate_lAddIntr(x)
 
 lAddIntr(nTrt)
+
+\method{summary}{lAddIntr}(x, ...)
 }
 \arguments{
 \item{fnAddIntr}{Function which will add ISAs}

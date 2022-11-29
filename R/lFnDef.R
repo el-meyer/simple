@@ -75,22 +75,8 @@ lFnDef <- function() {
       lPltfTrial <- list()
       lPltfTrial$lSnap$dCurrTime <- 0
       
-        # Add new ISAs according to how many should start
-        assign(
-          "lPltfTrial",
-          do.call(
-            match.fun(lPltfDsgn$lAddIntr$fnAddIntr),
-            args = list(
-              lPltfDsgn  = lPltfDsgn,
-              lPltfTrial = lPltfTrial,
-              lAddArgs   = lPltfDsgn$lAddIntr$lAddArgs
-            )
-          )
-        )
-        
-        return(
-          lPltfTrial
-        )
+      return(lPltfTrial)
+      
       },
     
     # Add new ISAs
@@ -98,7 +84,7 @@ lFnDef <- function() {
       lPltfDsgn, 
       lPltfTrial
     ) {
-      
+
       # For now simplicity assumption: If lPtlfTrial$lIntrDsgn list is not empty, those are candidates to be
       # included; no modeling of waiting list etc. Also this list specifies exactly the order in which ISAs
       # are included

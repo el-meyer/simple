@@ -862,21 +862,23 @@ Bayes_Fut2
   lNewIntr_fixed <- 
     new_lNewIntr(
       fnNewIntr  = function(lPltfTrial, lAddArgs) {
-        # if it has been 4 time units since last inclusion, add one ISA
-        if (lPltfTrial$lSnap$dCurrTime == max(lPltfTrial$lSnap$vIntrInclTimes) + lAddArgs$nTimeDiff & 
-            length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
+        if (lPltfTrial$lSnap$dCurrTime == 1) {
+          dAdd <- lAddArgs$cohorts_start
+          # if it has been 4 time units since last inclusion, add one ISA
+        } else if (lPltfTrial$lSnap$dCurrTime == max(lPltfTrial$lSnap$vIntrInclTimes) + lAddArgs$nTimeDiff & 
+                   length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
           dAdd <- 1
         } else {
           dAdd <- 0
         }
         return(dAdd)
       },
-      lAddArgs      = list(nTimeDiff = cohort_fixed, nMaxIntr = cohorts_max)
+      lAddArgs      = list(nTimeDiff = cohort_fixed, nMaxIntr = cohorts_max, cohorts_start = cohorts_start)
     )
   
   lPltfDsgn <- 
     lPltfDsgn(
-      lAddIntr      = lAddIntr(cohorts_start),
+      lAddIntr      = lAddIntr(),
       lAddPats      = lAddPats(),
       lAllocIntr    = lAllocIntr(),
       lIntrDsgn     = lIntrDsgn,

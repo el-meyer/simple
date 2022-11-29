@@ -77,22 +77,14 @@ validate_lAddIntr <- function(x) {
 #' @export
 #' @rdname lAddIntr
 # Helper Function
-lAddIntr <- function(nTrt) {
-  
-  # Throw error if x is not a scalar
-  if (!(is.atomic(nTrt) && length(nTrt) == 1L)) {
-    stop("Supplied input is not a scalar")
-  }
-  
-  # Throw error if x is not an integer
-  if (!nTrt == round(nTrt)) {
-    stop("Supplied input is not an integer")
-  }
+lAddIntr <- function() {
   
   new_lAddIntr(
     # In easy Version: Simply run lInitIntr on next ISA in ISA design list and append to platform trial list
     
     fnAddIntr = function(lPltfDsgn, lPltfTrial, lAddArgs) {
+      
+      # Expect nTrt in lAddArgs, telling this module how many new ISAs should be entered
       
       # For every new ISA, run the respective lInitIntr function and add to lPltfTrial$isas
       for (i in 1:lAddArgs$nTrt) {
@@ -128,7 +120,7 @@ lAddIntr <- function(nTrt) {
       
     },
     
-    lAddArgs   = list(nTrt = nTrt)
+    lAddArgs   = list()
   )
   
 }

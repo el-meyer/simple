@@ -4,6 +4,7 @@
 \alias{lStopRule}
 \alias{new_lStopRule}
 \alias{validate_lStopRule}
+\alias{summary.lStopRule}
 \title{Check if Platform Stopping Rules are reached}
 \usage{
 new_lStopRule(
@@ -14,6 +15,8 @@ new_lStopRule(
 validate_lStopRule(x)
 
 lStopRule(nWeeks = NULL, bNoActive = NULL)
+
+\method{summary}{lStopRule}(x, ...)
 }
 \arguments{
 \item{fnStopRule}{Function which will check if Stop Rules are reached}

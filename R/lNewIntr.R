@@ -82,7 +82,7 @@ validate_lNewIntr <- function(x) {
 #' @export
 #' @rdname lNewIntr
 # Helper Function
-lNewIntr <- function(nMaxIntr) {
+lNewIntr <- function(nMaxIntr, nStartIntr) {
   
   # Throw error if x is not a scalar
   if (!(is.atomic(nMaxIntr) && length(nMaxIntr) == 1L)) {
@@ -94,22 +94,41 @@ lNewIntr <- function(nMaxIntr) {
      stop("Supplied input is not an interger")
   }
   
+  # Throw error if x is not a scalar
+  if (!(is.atomic(nStartIntr) && length(nStartIntr) == 1L)) {
+    stop("Supplied input is not a scalar")
+  }
+  
+  # Throw error if x is not an integer
+  if (nStartIntr != round(nStartIntr)) {
+    stop("Supplied input is not an interger")
+  }
+  
+  # Throw error if maximum is larger than start value
+  if (nStartIntr > nMaxIntr) {
+    stop("Maximum number of ISAs is smaller than starting number of ISAs")
+  }
+  
   # In simple version: 
   # Replace outgoing ISAs only
   # Maximum x ISAs in total
   new_lNewIntr(
     fnNewIntr  = function(lPltfTrial, lAddArgs) {
-      # if both an ISA was outgoing in this time step and the maximum number has not yet been reached
-      # add as many ISAs as were outgoing
-      if (lPltfTrial$lSnap$dExitIntr > 0 & length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
+      # have special rules for first time unit
+      if (lPltfTrial$lSnap$dCurrTime == 1) {
+        dAdd <- lAddArgs$nStartIntr
+        # if both an ISA was outgoing in this time step and the maximum number has not yet been reached
+        # add as many ISAs as were outgoing
+      } else if (lPltfTrial$lSnap$dExitIntr > 0 & length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
         # add as many as were outgoing but maximum as many as can still be added
         dAdd <- min(lAddArgs$nMaxIntr - length(lPltfTrial$lSnap$vIntrInclTimes), lPltfTrial$lSnap$dExitIntr)
       } else {
         dAdd <- 0
       }
+
       return(dAdd)
     },
-    lAddArgs      = list(nMaxIntr = nMaxIntr)
+    lAddArgs      = list(nMaxIntr = nMaxIntr, nStartIntr = nStartIntr)
   )
   
 }

@@ -12,7 +12,7 @@
 #' @rdname lAllocArm
 # Constructor Function
 new_lAllocArm <- function(
-  # Function that is used in updating between ISA allocation ratios
+  # Function that is used in updating within ISA allocation ratios
   fnAllocArm = function(
     lPltfTrial, # List of current platform trial progress
     lAddArgs    # List of further arguments for this module

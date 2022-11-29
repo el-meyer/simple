@@ -90,7 +90,7 @@ lRecrPars <- function(nPat) {
   }
   
   # Throw error if x is not an integer
-  if (!nPat == round(nPat)) {
+  if (nPat != round(nPat)) {
     stop("Supplied input is not an integer")
   }
   
