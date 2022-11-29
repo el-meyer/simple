@@ -4,7 +4,8 @@
 \alias{lCheckEnrl}
 \alias{new_lCheckEnrl}
 \alias{validate_lCheckEnrl}
-\title{Check ISA Enrllment}
+\alias{summary.lCheckEnrl}
+\title{Check ISA Enrollment}
 \usage{
 new_lCheckEnrl(
   fnCheckEnrl = function(lPltfTrial, lAddArgs) { },
@@ -14,9 +15,11 @@ new_lCheckEnrl(
 validate_lCheckEnrl(x)
 
 lCheckEnrl()
+
+\method{summary}{lCheckEnrl}(x, ...)
 }
 \description{
-Functions and rules for within ISA checking of Enrllment of class lCheckEnrl
+Functions and rules for within ISA checking of Enrollment of class lCheckEnrl
 }
 \examples{
 

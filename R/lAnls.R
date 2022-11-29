@@ -67,11 +67,11 @@ lAnls <- function(
       # Get correct analysis function
       if (lAddArgs$endpoint == "binary") {
         
-        analysis_function <- analysis_function_binary
+        analysis_function <- lAddArgs$analysis_function_binary
         
       } else if (lAddArgs$endpoint == "continuous") {
         
-        analysis_function <- analysis_function_continuous
+        analysis_function <- lAddArgs$analysis_function_continuous
         
       } else {
         
@@ -85,35 +85,37 @@ lAnls <- function(
       # Firstly create dataset for analysis
       # Do separately for group1 and group2 because possibly different data sharing
       # Group1 Data
-      group1df <- 
-        subset(
-          do.call(
-            rbind.data.frame, 
-            lPltfTrial$isa[[lAddArgs$current_id]]$lPats
-          ),
-          Arm == lAddArgs$group1[1]
+      
+      temp_dat <- 
+        do.call(
+          rbind.data.frame, 
+          lPltfTrial$isa[[lAddArgs$current_id]]$lPats
         )
+      
+      cor_arm <- which(temp_dat$Arm == lAddArgs$group1[1])
+      
+      group1df <- temp_dat[cor_arm,]
         
       # Add data from other cohorts if necessary
       if (lAddArgs$group1[2] != "Intr") {
         
         # Firstly create all data
-        # In each ISA get only columns that are already in group1df
-        col_names <- colnames(group1df)
         intr_indices <- 1:length(lPltfTrial$isa)
         # Get only out of ISA indices
         intr_indices <- intr_indices[!intr_indices == lAddArgs$current_id]
         outside_data <- list()
         for (i in intr_indices) {
-          outside_data[[i]] <- 
-            subset(
-              do.call(
-                rbind.data.frame, 
-                lPltfTrial$isa[[i]]$lPats
-              ),
-              Arm == lAddArgs$group1[1],
-              select = col_names
+          
+          temp_dat <- 
+            do.call(
+              rbind.data.frame, 
+              lPltfTrial$isa[[i]]$lPats
             )
+          
+          cor_arm <- 
+            which(temp_dat$Arm == lAddArgs$group1[1])
+          
+          outside_data[[i]] <- temp_dat[cor_arm, ]
         }
         
         # Create Dataset (merge)
@@ -124,17 +126,18 @@ lAnls <- function(
           )
         
         # Depending on type of data sharing, filter data
-        if (lAddArgs$group1[2] != "Conc") {
+        if (lAddArgs$group1[2] == "Conc") {
           
           # Definition concurrent data: Patients that would have had to possibility to be randomized
           # to arm under investigation
           
+          later <- 
+            which(group1df_outside_intr$InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime)
+          earlier <- 
+            which(group1df_outside_intr$InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime)
+          
           group1df_outside_intr <- 
-            subset(
-              group1df_outside_intr,
-              InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime,
-              InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
-            )
+            group1df_outside_intr[intersect(later, earlier), ]
           
         }
         
@@ -145,35 +148,38 @@ lAnls <- function(
       }
       
       # Group2 Data
-      group2df <- 
-        subset(
-          do.call(
-            rbind.data.frame, 
-            lPltfTrial$isa[[lAddArgs$current_id]]$lPats
-          ),
-          Arm == lAddArgs$group2[1]
+      
+      temp_dat <- 
+        do.call(
+          rbind.data.frame, 
+          lPltfTrial$isa[[lAddArgs$current_id]]$lPats
         )
+      
+      cor_arm <- which(temp_dat$Arm == lAddArgs$group2[1])
+      
+      group2df <- temp_dat[cor_arm,]
       
       # Add data from other cohorts if necessary
       if (lAddArgs$group2[2] != "Intr") {
         
         # Firstly create all data
-        # In each ISA get only columns that are already in group1df
-        col_names <- colnames(group2df)
         intr_indices <- 1:length(lPltfTrial$isa)
         # Get only out of ISA indices
         intr_indices <- intr_indices[!intr_indices == lAddArgs$current_id]
         outside_data <- list()
         for (i in intr_indices) {
-          outside_data[[i]] <- 
-            subset(
-              do.call(
-                rbind.data.frame, 
-                lPltfTrial$isa[[i]]$lPats
-              ),
-              Arm == lAddArgs$group2[1],
-              select = col_names
+          
+          temp_dat <- 
+            do.call(
+              rbind.data.frame, 
+              lPltfTrial$isa[[i]]$lPats
             )
+          
+          cor_arm <- 
+            which(temp_dat$Arm == lAddArgs$group2[1])
+          
+          outside_data[[i]] <- temp_dat[cor_arm, ]
+          
         }
         
         # Create Dataset (merge)
@@ -184,17 +190,21 @@ lAnls <- function(
           )
         
         # Depending on type of data sharing, filter data
-        if (lAddArgs$group2[2] != "Conc") {
+        if (lAddArgs$group2[2] == "Conc") {
           
           # Definition concurrent data: Patients that would have had to possibility to be randomized
           # to arm under investigation
+          # 
+          
+          # filter to only concurrent control data
+          
+          later <- 
+            which(group2df_outside_intr$InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime)
+          earlier <- 
+            which(group2df_outside_intr$InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime)
           
           group2df_outside_intr <- 
-            subset(
-              group2df_outside_intr,
-              InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime,
-              InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
-            )
+            group2df_outside_intr[intersect(later, earlier), ]
           
         }
         
@@ -212,15 +222,19 @@ lAnls <- function(
         ) %>% 
         dplyr::filter(
           OutObsTime <= lPltfTrial$lSnap$dCurrTime
+        ) %>% 
+        dplyr::mutate(
+          Arm = factor(Arm)
         )
       
       results <- match.fun(analysis_function)(analysis_data)
       
-      # Save Analysis Dataset as well
+      # Save Analysis Dataset and Timing as well
       lPltfTrial$isa[[lAddArgs$current_id]]$lAnalyses[[lAddArgs$nMstn]] <- 
         list(
           results = results,
-          analysis_data = analysis_data
+          analysis_data = analysis_data,
+          analysis_time = lPltfTrial$lSnap$dCurrTime
         )
       
       print(

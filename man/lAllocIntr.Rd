@@ -4,6 +4,7 @@
 \alias{lAllocIntr}
 \alias{new_lAllocIntr}
 \alias{validate_lAllocIntr}
+\alias{summary.lAllocIntr}
 \title{Between ISA allocation ratio}
 \usage{
 new_lAllocIntr(
@@ -14,6 +15,8 @@ new_lAllocIntr(
 validate_lAllocIntr(x)
 
 lAllocIntr()
+
+\method{summary}{lAllocIntr}(x, ...)
 }
 \description{
 Functions and rules for between ISA allocation ratio of class lAllocIntr

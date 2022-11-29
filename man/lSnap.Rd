@@ -4,6 +4,7 @@
 \alias{lSnap}
 \alias{new_lSnap}
 \alias{validate_lSnap}
+\alias{summary.lSnap}
 \title{List of current trial snapshot}
 \usage{
 new_lSnap(fnSnap = function(lPltfTrial, lAddArgs) {
@@ -12,6 +13,8 @@ new_lSnap(fnSnap = function(lPltfTrial, lAddArgs) {
 validate_lSnap(x)
 
 lSnap()
+
+\method{summary}{lSnap}(x, ...)
 }
 \arguments{
 \item{lAddArgs}{Further arguments used in fnAddIntr}

@@ -8,7 +8,7 @@ output:
       fig_caption: yes
       highlight: textmate
 vignette: >
-  %\VignetteIndexEntry{Intervention Inclusion Module Vignette}
+  %\VignetteIndexEntry{lNewIntr}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
   

@@ -11,11 +11,7 @@ new_lSimBase(fnSimBase = function(lPltfTrial, lAddArgs) {
 
 validate_lSimBase(x)
 
-lSimBase(
-  vars = list(list("age", "max(rnorm(n, 45, 10), 18)"), list("sex",
-    "sample(0:1, n, replace = TRUE)"), list("time", "t")),
-  names = c("Age", "Sex", "InclusionTime")
-)
+lSimBase(vars = list(list("time", "t")), names = c("InclusionTime"))
 }
 \description{
 Functions and rules for simulating patient Baseline data of class lSimBase

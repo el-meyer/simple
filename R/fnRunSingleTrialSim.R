@@ -1,14 +1,23 @@
-
+#' Runs a single platform trial simulation 
+#'
+#' @param lPltfDsgn          Platform Design List
+#' 
+#' @param bRetainSnaps       Whether or not to keep the list of snapshots; Default is TRUE
+#' 
+#' @param bCreateLog         Whether or not to create a log file in current folder; Default is TRUE
+#' 
+#' @param cLogName           Name of Log File; Default is "platform"
+#' 
 #' @export
 
 # Where to add data management to reduce runtime?
 
 fnRunSingleTrialSim <-
   function(
-    lPltfDsgn,                # List that contains all the platform design rules
-    bRetainSnaps = TRUE,      # Whether or not to keep the list of snapshots
-    bCreateLog   = TRUE,      # Whether or not to create a log file in current folder
-    cLogName     = "platform" # Name of Log File
+    lPltfDsgn,                
+    bRetainSnaps = TRUE,      
+    bCreateLog   = FALSE,      
+    cLogName     = "platform" 
   ) {
     
     # Check whether or not to create a log
@@ -45,6 +54,23 @@ fnRunSingleTrialSim <-
     
     # What happens every time unit of the platform trial?
     while (!bTrialClose) {
+      
+      # Update the time ("a new week is starting")
+      # Think about more general "update snapshot" module?
+      lPltfTrial$lSnap$dCurrTime <- lPltfTrial$lSnap$dCurrTime + 1
+      
+      # Handle ISA inclusion before updating snapshot, 
+      # e.g. looking at past time snap, only with dCurrTime updated
+      assign(
+        "lPltfTrial",
+        do.call(
+          match.fun(lPltfDsgn$lFnDef$fnAddNewIntr),
+          args = list(
+            lPltfDsgn  = lPltfDsgn,
+            lPltfTrial = lPltfTrial
+          )
+        )
+      )
       
       # Update snapshot
       assign(
@@ -110,25 +136,6 @@ fnRunSingleTrialSim <-
       if (bRetainSnaps) {
         # Store current snapshot outside of lPltfTrial
         lSnapshots <- c(lSnapshots, list(lPltfTrial$lSnap))
-      }
-      
-      if (!bTrialClose) {
-        # Handle ISA inclusion if platform did not stop
-        assign(
-          "lPltfTrial",
-          do.call(
-            match.fun(lPltfDsgn$lFnDef$fnAddNewIntr),
-            args = list(
-              lPltfDsgn  = lPltfDsgn,
-              lPltfTrial = lPltfTrial
-            )
-          )
-        )
-        
-        # Update the time ("the week is over")
-        # Think about more general "update snapshot" module?
-        lPltfTrial$lSnap$dCurrTime <- lPltfTrial$lSnap$dCurrTime + 1
-        
       }
       
     }
