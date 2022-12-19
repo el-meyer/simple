@@ -114,7 +114,7 @@ lStopRule <- function(nWeeks = NULL, bNoActive = NULL) {
       
       return(ret)
     },
-    lAddArgs   = list(nWeeks = nWeeks, bNoEnrol = bNoActive)
+    lAddArgs   = list(nWeeks = nWeeks, bNoActive = bNoActive)
   )
 
 }
