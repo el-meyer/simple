@@ -135,7 +135,7 @@ lNewIntr <- function(nMaxIntr, nStartIntr, vArrTimes = NULL) {
     fnNewIntr  = function(lPltfTrial, lAddArgs) {
       
       # either have vector of arrival times directly specified, or not
-      if (is.null(vArrTimes)) {
+      if (is.null(lAddArgs$vArrTimes)) {
         # have special rules for first time unit
         if (lPltfTrial$lSnap$dCurrTime == 1) {
           dAdd <- lAddArgs$nStartIntr
@@ -149,12 +149,12 @@ lNewIntr <- function(nMaxIntr, nStartIntr, vArrTimes = NULL) {
         }
         # if vector of arrival times directly specified
       } else {
-        dAdd <- sum(lPltfTrial$lSnap$dCurrTime == vArrTimes)
+        dAdd <- sum(lPltfTrial$lSnap$dCurrTime == lAddArgs$vArrTimes)
       }
 
       return(dAdd)
     },
-    lAddArgs      = list(nMaxIntr = nMaxIntr, nStartIntr = nStartIntr)
+    lAddArgs      = list(nMaxIntr = nMaxIntr, nStartIntr = nStartIntr, vArrTimes = vArrTimes)
   )
   
 }

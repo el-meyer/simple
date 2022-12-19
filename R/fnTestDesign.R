@@ -32,10 +32,11 @@
 #'    ISA_start = 3,
 #'    lag_units = 1
 #'  )
+#'  
+#' ocs <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 300, nCores = 7)
 #' 
 #' out1 <- fnRunSingleTrialSim(lPltfDsgn, bRetainSnaps = TRUE)
 #' ocs1 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 5)
-#' ocs2 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 300, nCores = 7)
 #' out2 <- fnRunSingleTrialSim(fnTestDesign())
 #'
 #' @export
