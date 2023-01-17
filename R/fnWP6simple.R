@@ -81,6 +81,7 @@
 #' )
 #' 
 #' out <- fnRunSingleTrialSim(lPltfDsgn)
+#' ocs1 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 5)
 #' 
 #' @export
 fnWP6simple <- function(
@@ -325,15 +326,18 @@ Bayes_Fut2
             intr_indices <- intr_indices[!intr_indices == lAddArgs$current_id]
             outside_data <- list()
             for (i in intr_indices) {
-              outside_data[[i]] <- 
-                subset(
-                  do.call(
-                    rbind.data.frame, 
-                    lPltfTrial$isa[[i]]$lPats
-                  ),
-                  Arm == lAddArgs$group1[1],
-                  select = col_names
-                )
+              # Make sure that these ISAs are not empty (otherwise error is thrown)
+              if (length(lPltfTrial$isa[[i]]$lPats) > 0) {
+                outside_data[[i]] <- 
+                  subset(
+                    do.call(
+                      rbind.data.frame, 
+                      lPltfTrial$isa[[i]]$lPats
+                    ),
+                    Arm == lAddArgs$group1[1],
+                    select = col_names
+                  )
+              }
             }
             
             # Create Dataset (merge)
@@ -388,15 +392,18 @@ Bayes_Fut2
             intr_indices <- intr_indices[!intr_indices == lAddArgs$current_id]
             outside_data <- list()
             for (i in intr_indices) {
-              outside_data[[i]] <- 
-                subset(
-                  do.call(
-                    rbind.data.frame, 
-                    lPltfTrial$isa[[i]]$lPats
-                  ),
-                  Arm == lAddArgs$group2[1],
-                  select = col_names
-                )
+              # Make sure that these ISAs are not empty (otherwise error is thrown)
+              if (length(lPltfTrial$isa[[i]]$lPats) > 0) {
+                outside_data[[i]] <- 
+                  subset(
+                    do.call(
+                      rbind.data.frame, 
+                      lPltfTrial$isa[[i]]$lPats
+                    ),
+                    Arm == lAddArgs$group2[1],
+                    select = col_names
+                  )
+              }
             }
             
             # Create Dataset (merge)
@@ -859,6 +866,67 @@ Bayes_Fut2
     )
   
   
+  lOCSynth_WP6 <- 
+    new_lOCSynth(
+      
+      fnOCSynth = function(lIndTrials, lAddArgs) {
+        
+        lOCs <- 
+          list(
+            
+            # use as.matrix in case only one treatment is in the trial to avoid matrix to vector conversion
+            
+            ISA_Total_Time     = mean(sapply(lIndTrials, function(x) x$Total_Time)),
+            ISA_Entry_Time     = rowMeans(sapply(lIndTrials, function(x) x$Start_Time)),
+
+            ISA_N_Obs          = rowMeans(sapply(lIndTrials, function(x) x$ISA_N_Obs)),
+            ISA_N_Alloc        = rowMeans(sapply(lIndTrials, function(x) x$ISA_N_Alloc)),
+            
+            Avg_N_Trial_Obs    = mean(sapply(lIndTrials, function(x) x$Total_N_Obs)),
+            Avg_N_Trial_Alloc  = mean(sapply(lIndTrials, function(x) x$Total_N_Alloc)),
+            
+            Avg_Time           = mean(sapply(lIndTrials, function(x) x$Total_Time)),
+            
+            Avg_Intx1_Go                = sum(sapply(lIndTrials, function(x) x$Intx1_GO)) /
+              sum(sapply(lIndTrials, function(x) x$N_Cohorts)),
+            Avg_Intx2_Go                = sum(sapply(lIndTrials, function(x) x$Intx2_GO)) /
+              sum(sapply(lIndTrials, function(x) x$N_Cohorts)),
+            Avg_Intx3_Go                = sum(sapply(lIndTrials, function(x) x$Intx3_GO)) /
+              sum(sapply(lIndTrials, function(x) x$N_Cohorts)),
+            
+            Avg_Intx1_Stop              = sum(sapply(lIndTrials, function(x) x$Intx1_STOP)) /
+              sum(sapply(lIndTrials, function(x) x$N_Cohorts)),
+            Avg_Intx2_Stop              = sum(sapply(lIndTrials, function(x) x$Intx2_STOP)) /
+              sum(sapply(lIndTrials, function(x) x$N_Cohorts)),
+            Avg_Intx3_Stop              = sum(sapply(lIndTrials, function(x) x$Intx3_STOP)) /
+              sum(sapply(lIndTrials, function(x) x$N_Cohorts)),
+
+            
+            Avg_TP                     = mean(sapply(lIndTrials, function(x) x$TP)),
+            Avg_FP                     = mean(sapply(lIndTrials, function(x) x$FP)),
+            Avg_TN                     = mean(sapply(lIndTrials, function(x) x$TN)),
+            Avg_FN                     = mean(sapply(lIndTrials, function(x) x$FN)),
+            Avg_any_P                  = mean(sapply(lIndTrials, function(x) x$any_P)),
+            
+            
+            FDR                        = sum(sapply(lIndTrials, function(x) x$FP)) /
+              sum(sapply(lIndTrials, function(x) x$TP) + sapply(lIndTrials, function(x) x$FP)),
+            PTP                        = sum(sapply(lIndTrials, function(x) x$TP)) /
+              sum((sapply(lIndTrials, function(x) x$TP) + sapply(lIndTrials, function(x) x$FN))),
+            PTT1ER                     = sum(sapply(lIndTrials, function(x) x$FP)) /
+              sum((sapply(lIndTrials, function(x) x$FP) + sapply(lIndTrials, function(x) x$TN)))
+            
+          )
+        
+        return(lOCs)
+        
+      },
+      
+      lAddArgs   = list()
+      
+    )
+  
+  
   lNewIntr_fixed <- 
     new_lNewIntr(
       fnNewIntr  = function(lPltfTrial, lAddArgs) {
@@ -883,6 +951,7 @@ Bayes_Fut2
       lAllocIntr    = lAllocIntr(),
       lIntrDsgn     = lIntrDsgn,
       lNewIntr      = lNewIntr_fixed,
+      lOCSynth      = lOCSynth_WP6,
       lPltfSummary  = lPltfSummary_WP6,
       lRecrPars     = lRecrPars(accrual_param),
       lSimBase      = lSimBase(),
