@@ -271,7 +271,15 @@ Bayes_Fut2
         return(lPltfTrial)
         
       },
-      lAddArgs   = list(cGroups = cGroups, dTheta1 = dTheta1, dTheta2 = dTheta2, dCorr = dCorr, dTrend = dTrend, nLag = nLag)
+      lAddArgs   = 
+        list(
+          cGroups = cGroups, 
+          dTheta1 = dTheta1, 
+          dTheta2 = dTheta2, 
+          dCorr = dCorr, 
+          dTrend = dTrend, 
+          nLag = nLag
+        )
     )
   }
     
@@ -348,17 +356,31 @@ Bayes_Fut2
               )
             
             # Depending on type of data sharing, filter data
-            if (lAddArgs$group1[2] != "Conc") {
+            if (lAddArgs$group1[2] == "Conc") {
               
               # Definition concurrent data: Patients that would have had to possibility to be randomized
               # to arm under investigation
               
-              group1df_outside_intr <- 
-                subset(
-                  group1df_outside_intr,
-                  InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime,
-                  InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
+              later <- 
+                which(
+                  group1df_outside_intr$InclusionTime >= 
+                    lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
                 )
+              earlier <- 
+                which(
+                  group1df_outside_intr$InclusionTime <= 
+                    lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime
+                )
+              
+              group1df_outside_intr <- 
+                group1df_outside_intr[intersect(later, earlier), ]
+              
+              # group1df_outside_intr <- 
+              #   subset(
+              #     group1df_outside_intr,
+              #     InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime,
+              #     InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
+              #   )
               
             }
             
@@ -414,17 +436,31 @@ Bayes_Fut2
               )
             
             # Depending on type of data sharing, filter data
-            if (lAddArgs$group2[2] != "Conc") {
+            if (lAddArgs$group2[2] == "Conc") {
               
               # Definition concurrent data: Patients that would have had to possibility to be randomized
               # to arm under investigation
               
-              group2df_outside_intr <- 
-                subset(
-                  group2df_outside_intr,
-                  InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime,
-                  InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
+              later <- 
+                which(
+                  group2df_outside_intr$InclusionTime >= 
+                    lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
                 )
+              earlier <- 
+                which(
+                  group2df_outside_intr$InclusionTime <= 
+                    lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime
+                )
+              
+              group2df_outside_intr <- 
+                group2df_outside_intr[intersect(later, earlier), ]
+              
+              # group2df_outside_intr <- 
+              #   subset(
+              #     group2df_outside_intr,
+              #     InclusionTime <= lPltfTrial$isa[[lAddArgs$current_id]]$nEndEnrlTime,
+              #     InclusionTime >= lPltfTrial$isa[[lAddArgs$current_id]]$nStartTime
+              #   )
               
             }
             
@@ -518,7 +554,7 @@ Bayes_Fut2
             sup_reached <- rep(NA, nrow(Bayes_Sup2))
             prob_sup_vec <- rep(NA, nrow(Bayes_Sup2))
             
-            for (i in 1:(nrow(Bayes_Sup1))) {
+            for (i in 1:(nrow(Bayes_Sup2))) {
               
               # Evaluate decision rule, but if non-existent, give NA
               if (is.na(Bayes_Sup2[i,1])) {
@@ -569,7 +605,7 @@ Bayes_Fut2
                   )
               }
               
-              fut_reached[i] <- prob_sup_vec[i] < Bayes_Fut1[i,2]
+              fut_reached[i] <- prob_fut_vec[i] < Bayes_Fut1[i,2]
               
             }
             
@@ -598,14 +634,14 @@ Bayes_Fut2
               } else {
                 prob_fut_vec[i] <-
                   post_prob_bin(
-                    n_tot1[2], n_tot1[1],
-                    resp_tot1[2], resp_tot1[1],
+                    n_tot2[2], n_tot2[1],
+                    resp_tot2[2], resp_tot2[1],
                     Bayes_Fut2[i,1], 
                     beta_prior, beta_prior, beta_prior, beta_prior
                   )
               }
               
-              fut_reached[i] <- prob_sup_vec[i] < Bayes_Fut2[i,2]
+              fut_reached[i] <- prob_fut_vec[i] < Bayes_Fut2[i,2]
               
             }
             
@@ -748,7 +784,7 @@ Bayes_Fut2
             Bayes_Sup1 = Bayes_Sup1,
             Bayes_Sup2 = Bayes_Sup2,
             Bayes_Fut1 = Bayes_Fut1,
-            Bayes_Fut2 = Bayes_Sup2
+            Bayes_Fut2 = Bayes_Fut2
           ),
         lSynthRes       = lSynthRes_CorrBin(analysis_times),
         lCheckEnrl      = lCheckEnrl()
