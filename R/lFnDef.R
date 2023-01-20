@@ -268,70 +268,75 @@ lFnDef <- function() {
     ) {
       
       for (i in 1:length(lPltfTrial$isa)) {
-
-        # Check Analysis Milestone
-        lPltfTrial <-
-          do.call(
-            match.fun(lPltfDsgn$lIntrDsgn[[i]]$lCheckAnlsMstn$fnCheckAnlsMstn), 
-            args = list(
-              lPltfTrial   = lPltfTrial,
-              lAddArgs     = c(
-                lPltfDsgn$lIntrDsgn[[i]]$lCheckAnlsMstn$lAddArgs,
-                current_id = i 
-              )
-            )
-          )
         
-        # If any analysis milestone reached
-        if (any(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn)) {
-          # check how many analyses were conducted already and if this number is smaller than 
-          # the total number of milestones reached
-          if (sum(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn) > 
-              length(lPltfTrial$isa[[i]]$lAnalyses)) {
-            
-            # Run Analysis
-            lPltfTrial <-
-              do.call(
-                match.fun(lPltfDsgn$lIntrDsgn[[i]]$lAnls$fnAnls),
-                args = list(
-                  lPltfTrial   = lPltfTrial,
-                  lAddArgs     = c(
-                    lPltfDsgn$lIntrDsgn[[i]]$lAnls$lAddArgs,
-                    current_id = i,
-                    # Pass latest Milestone to Analysis Function
-                    nMstn      = sum(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn)
-                  )
+        # check if ISA is still active, i.e. has no cEndReason
+        if (is.na(lPltfTrial$isa[[i]]$cEndReason)) {
+          
+          # Check Analysis Milestone
+          lPltfTrial <-
+            do.call(
+              match.fun(lPltfDsgn$lIntrDsgn[[i]]$lCheckAnlsMstn$fnCheckAnlsMstn), 
+              args = list(
+                lPltfTrial   = lPltfTrial,
+                lAddArgs     = c(
+                  lPltfDsgn$lIntrDsgn[[i]]$lCheckAnlsMstn$lAddArgs,
+                  current_id = i 
                 )
               )
-           
+            )
+          
+          # If any analysis milestone reached
+          if (any(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn)) {
+            # check how many analyses were conducted already and if this number is smaller than 
+            # the total number of milestones reached
+            if (sum(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn) > 
+                length(lPltfTrial$isa[[i]]$lAnalyses)) {
+              
+              # Run Analysis
+              lPltfTrial <-
+                do.call(
+                  match.fun(lPltfDsgn$lIntrDsgn[[i]]$lAnls$fnAnls),
+                  args = list(
+                    lPltfTrial   = lPltfTrial,
+                    lAddArgs     = c(
+                      lPltfDsgn$lIntrDsgn[[i]]$lAnls$lAddArgs,
+                      current_id = i,
+                      # Pass latest Milestone to Analysis Function
+                      nMstn      = sum(lPltfTrial$lSnap$isa_temp[[i]]$AnlsMstn)
+                    )
+                  )
+                )
+              
+            }
           }
+          
+          # Implement possible Decisions
+          lPltfTrial <-
+            do.call(
+              match.fun(lPltfDsgn$lIntrDsgn[[i]]$lSynthRes$fnSynthRes),
+              args = list(
+                lPltfTrial   = lPltfTrial,
+                lAddArgs     = c(
+                  lPltfDsgn$lIntrDsgn[[i]]$lSynthRes$lAddArgs,
+                  current_id = i
+                )
+              )
+            )
+          
+          # Check whether ISA is still actively enrolling
+          lPltfTrial <-
+            do.call(
+              match.fun(lPltfDsgn$lIntrDsgn[[i]]$lCheckEnrl$fnCheckEnrl), 
+              args = list(
+                lPltfTrial   = lPltfTrial,
+                lAddArgs     = c(
+                  lPltfDsgn$lIntrDsgn[[i]]$lCheckEnrl$lAddArgs,
+                  current_id = i 
+                )
+              )
+            )
+          
         }
-        
-        # Implement possible Decisions
-        lPltfTrial <-
-          do.call(
-            match.fun(lPltfDsgn$lIntrDsgn[[i]]$lSynthRes$fnSynthRes),
-            args = list(
-              lPltfTrial   = lPltfTrial,
-              lAddArgs     = c(
-                lPltfDsgn$lIntrDsgn[[i]]$lSynthRes$lAddArgs,
-                current_id = i
-              )
-            )
-          )
-
-        # Check whether ISA is still actively enrolling
-        lPltfTrial <-
-          do.call(
-            match.fun(lPltfDsgn$lIntrDsgn[[i]]$lCheckEnrl$fnCheckEnrl), 
-            args = list(
-              lPltfTrial   = lPltfTrial,
-              lAddArgs     = c(
-                lPltfDsgn$lIntrDsgn[[i]]$lCheckEnrl$lAddArgs,
-                current_id = i 
-              )
-            )
-          )
         
       }
     

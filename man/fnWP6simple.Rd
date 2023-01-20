@@ -111,5 +111,6 @@ fnWP6simple(
 )
 
 out <- fnRunSingleTrialSim(lPltfDsgn)
+ocs1 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 5)
 
 }
