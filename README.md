@@ -3,6 +3,27 @@
 
 # SIMPLE - SIMulating PLatform trials Efficiently
 
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of SIMPLE is to facilitate the simulation of platform trials in
+a modular manner.
+
+## Installation
+
+You can install the development version from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("el-meyer/simple")
+```
+
+## Usage
+
+Please see an upcoming paper for more information on the usage of this
+paper.
+
 ## Disclaimer
 
 EU-PEARL (EU Patient-cEntric clinicAl tRial pLatforms) project has
