@@ -15,6 +15,9 @@
 #' @param correlation          Correlation between histology endpoints
 #'
 #' @param cohort_fixed         If not NULL, fixed timesteps after which a cohort will be included
+#' 
+#' @param cohort_random        If not NULL, probability of including new cohorts at every time unit. If this is 
+#'                             specified, cohort_fixed is ignored.
 #'
 #' @param cohorts_max          Maximum number of cohorts that are allowed to be added throughout the trial
 #'
@@ -58,9 +61,9 @@
 #' Bayes_Sup13 <- matrix(nrow = 2, ncol = 2)
 #' Bayes_Sup13[1,] <- c(0.00, 0.95)
 #' Bayes_Sup13[2,] <- c(0.10, 0.80)
-#'
+#' 
 #' Bayes_Sup1 <- Bayes_Sup2 <- list(Bayes_Sup11, Bayes_Sup12, Bayes_Sup13)
-#'
+#' 
 #' # Comparison IA1
 #' Bayes_Fut11 <- matrix(nrow = 1, ncol = 2)
 #' Bayes_Fut11[1,] <- c(0.00, 0.20)
@@ -72,13 +75,7 @@
 #' # Endpoint 1+2
 #' Bayes_Fut1 <- Bayes_Fut2 <- list(Bayes_Fut11, Bayes_Fut12, Bayes_Fut13)
 #' 
-#' lPltfDsgn <- 
-#' fnWP6simple(
-#'  Bayes_Sup1 = Bayes_Sup1,
-#'  Bayes_Sup2 = Bayes_Sup2, 
-#'  Bayes_Fut1 = Bayes_Fut1,
-#'  Bayes_Fut2 = Bayes_Fut2
-#' )
+#' lPltfDsgn <- fnWP6simple()
 #' 
 #' out <- fnRunSingleTrialSim(lPltfDsgn)
 #' ocs1 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 5)
@@ -87,23 +84,24 @@
 fnWP6simple <- function(
 n_fin = 150,
 cohorts_start = 2,
-rr_comb1 = 0.2,
+rr_comb1 = 0.35,
 rr_comb2 = 0.35,
 rr_plac1 = 0.1,
-rr_plac2 = 0.25,
-correlation = 0.5,
+rr_plac2 = 0.2,
+correlation = 0,
 cohort_fixed = 24,
+cohort_random = NULL,
 cohorts_max  = 5,
 sharing_type = "Conc",
-accrual_param = 9,
+accrual_param = 6,
 analysis_times = c(0.5, 0.75, 1),
-hist_lag = 48,
+hist_lag = 52,
 time_trend = 0,
 composite = "or",
-Bayes_Sup1,
-Bayes_Sup2, 
-Bayes_Fut1,
-Bayes_Fut2
+Bayes_Sup1 = list(matrix(c(0, 0.95), nrow = 1), matrix(c(0, 0.95), nrow = 1), matrix(c(0, 0.95), nrow = 1)),
+Bayes_Sup2 = list(matrix(c(0, 0.95), nrow = 1), matrix(c(0, 0.95), nrow = 1), matrix(c(0, 0.95), nrow = 1)), 
+Bayes_Fut1 = NULL,
+Bayes_Fut2 = NULL
 ) {
   
   # Create all sort of warning messages and stop messages
@@ -322,7 +320,7 @@ Bayes_Fut2
               ),
               Arm == lAddArgs$group1[1]
             )
-          
+
           # Add data from other cohorts if necessary
           if (lAddArgs$group1[2] != "Intr") {
             
@@ -386,12 +384,16 @@ Bayes_Fut2
             
             # create final dataset
             group1df <- 
-              plyr::rbind.fill(group1df, group1df_outside_intr) %>% 
-              dplyr::filter(
-                OutObsTime <= lPltfTrial$lSnap$dCurrTime
-              )
+              plyr::rbind.fill(group1df, group1df_outside_intr)
             
           }
+          
+          # make sure that outcomes observed
+          group1df <- 
+            group1df %>% 
+            dplyr::filter(
+              OutObsTime <= lPltfTrial$lSnap$dCurrTime
+            )
           
           # Group2 Data
           group2df <- 
@@ -466,12 +468,16 @@ Bayes_Fut2
             
             # create final dataset
             group2df <- 
-              plyr::rbind.fill(group2df, group2df_outside_intr) %>% 
-              dplyr::filter(
-                OutObsTime <= lPltfTrial$lSnap$dCurrTime
-              )
+              plyr::rbind.fill(group2df, group2df_outside_intr)
             
           }
+          
+          # make sure that outcomes observed
+          group2df <- 
+            group2df %>% 
+            dplyr::filter(
+              OutObsTime <= lPltfTrial$lSnap$dCurrTime
+            )
           
           # Combine Datasets
           analysis_data <- 
@@ -962,23 +968,46 @@ Bayes_Fut2
       
     )
   
+  # Check if random or fixed inclusion of new ISAs
   
-  lNewIntr_fixed <- 
-    new_lNewIntr(
-      fnNewIntr  = function(lPltfTrial, lAddArgs) {
-        if (lPltfTrial$lSnap$dCurrTime == 1) {
-          dAdd <- lAddArgs$cohorts_start
-          # if it has been 4 time units since last inclusion, add one ISA
-        } else if (lPltfTrial$lSnap$dCurrTime == max(lPltfTrial$lSnap$vIntrInclTimes) + lAddArgs$nTimeDiff & 
-                   length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
-          dAdd <- 1
-        } else {
-          dAdd <- 0
-        }
-        return(dAdd)
-      },
-      lAddArgs      = list(nTimeDiff = cohort_fixed, nMaxIntr = cohorts_max, cohorts_start = cohorts_start)
-    )
+  if (!is.null(cohort_random)) {
+    
+    lNewIntr_WP6 <- 
+      new_lNewIntr(
+        fnNewIntr  = function(lPltfTrial, lAddArgs) {
+          if (lPltfTrial$lSnap$dCurrTime == 1) {
+            dAdd <- lAddArgs$cohorts_start
+            # sample with probability
+          } else if (length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
+            dAdd <- sample(c(0,1), 1, prob = c(1 - lAddArgs$dAddProb, lAddArgs$dAddProb))
+          } else {
+            dAdd <- 0
+          }
+          return(dAdd)
+        },
+        lAddArgs      = list(dAddProb = cohort_random, nMaxIntr = cohorts_max, cohorts_start = cohorts_start)
+      )
+    
+  } else {
+    
+    lNewIntr_WP6 <- 
+      new_lNewIntr(
+        fnNewIntr  = function(lPltfTrial, lAddArgs) {
+          if (lPltfTrial$lSnap$dCurrTime == 1) {
+            dAdd <- lAddArgs$cohorts_start
+            # if it has been 4 time units since last inclusion, add one ISA
+          } else if (lPltfTrial$lSnap$dCurrTime == max(lPltfTrial$lSnap$vIntrInclTimes) + lAddArgs$nTimeDiff & 
+                     length(lPltfTrial$lSnap$vIntrInclTimes) < lAddArgs$nMaxIntr) {
+            dAdd <- 1
+          } else {
+            dAdd <- 0
+          }
+          return(dAdd)
+        },
+        lAddArgs      = list(nTimeDiff = cohort_fixed, nMaxIntr = cohorts_max, cohorts_start = cohorts_start)
+      )
+    
+  }
   
   lPltfDsgn <- 
     lPltfDsgn(
@@ -986,7 +1015,7 @@ Bayes_Fut2
       lAddPats      = lAddPats(),
       lAllocIntr    = lAllocIntr(),
       lIntrDsgn     = lIntrDsgn,
-      lNewIntr      = lNewIntr_fixed,
+      lNewIntr      = lNewIntr_WP6,
       lOCSynth      = lOCSynth_WP6,
       lPltfSummary  = lPltfSummary_WP6,
       lRecrPars     = lRecrPars(accrual_param),
