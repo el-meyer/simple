@@ -7,23 +7,26 @@
 fnWP6simple(
   n_fin = 150,
   cohorts_start = 2,
-  rr_comb1 = 0.2,
+  rr_comb1 = 0.35,
   rr_comb2 = 0.35,
   rr_plac1 = 0.1,
-  rr_plac2 = 0.25,
-  correlation = 0.5,
+  rr_plac2 = 0.2,
+  correlation = 0,
   cohort_fixed = 24,
+  cohort_random = NULL,
   cohorts_max = 5,
   sharing_type = "Conc",
-  accrual_param = 9,
+  accrual_param = 6,
   analysis_times = c(0.5, 0.75, 1),
-  hist_lag = 48,
+  hist_lag = 52,
   time_trend = 0,
   composite = "or",
-  Bayes_Sup1,
-  Bayes_Sup2,
-  Bayes_Fut1,
-  Bayes_Fut2
+  Bayes_Sup1 = list(matrix(c(0, 0.95), nrow = 1), matrix(c(0, 0.95), nrow = 1),
+    matrix(c(0, 0.95), nrow = 1)),
+  Bayes_Sup2 = list(matrix(c(0, 0.95), nrow = 1), matrix(c(0, 0.95), nrow = 1),
+    matrix(c(0, 0.95), nrow = 1)),
+  Bayes_Fut1 = NULL,
+  Bayes_Fut2 = NULL
 )
 }
 \arguments{
@@ -42,6 +45,9 @@ fnWP6simple(
 \item{correlation}{Correlation between histology endpoints}
 
 \item{cohort_fixed}{If not NULL, fixed timesteps after which a cohort will be included}
+
+\item{cohort_random}{If not NULL, probability of including new cohorts at every time unit. If this is
+specified, cohort_fixed is ignored.}
 
 \item{cohorts_max}{Maximum number of cohorts that are allowed to be added throughout the trial}
 
@@ -102,13 +108,7 @@ Bayes_Fut13 <- NULL
 # Endpoint 1+2
 Bayes_Fut1 <- Bayes_Fut2 <- list(Bayes_Fut11, Bayes_Fut12, Bayes_Fut13)
 
-lPltfDsgn <- 
-fnWP6simple(
- Bayes_Sup1 = Bayes_Sup1,
- Bayes_Sup2 = Bayes_Sup2, 
- Bayes_Fut1 = Bayes_Fut1,
- Bayes_Fut2 = Bayes_Fut2
-)
+lPltfDsgn <- fnWP6simple()
 
 out <- fnRunSingleTrialSim(lPltfDsgn)
 ocs1 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 5)

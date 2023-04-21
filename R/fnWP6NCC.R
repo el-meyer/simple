@@ -34,6 +34,11 @@
 #' Bayes_Sup[3,] <- c(0.20, 0.60)
 #' 
 #' lPltfDsgn <- fnWP6NCC(Bayes_Sup = Bayes_Sup)
+#'
+#'
+#' Bayes_Sup <- matrix(nrow = 1, ncol = 2)
+#' Bayes_Sup[1,] <- c(0.00, 0.95)
+#' lPltfDsgn <- fnWP6NCC(Bayes_Sup = Bayes_Sup)
 #' 
 #' out <- fnRunSingleTrialSim(lPltfDsgn)
 #' ocs1 <- fnSimDsgnOC(lPltfDsgn = lPltfDsgn, nIter = 20)
