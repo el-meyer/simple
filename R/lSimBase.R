@@ -36,7 +36,7 @@ validate_lSimBase <- function(x) {
 }
 #' @export
 #' @rdname lSimBase
-# Helper Function creates sex and age and current time
+# Helper Function creates current time
 lSimBase <- 
   function(
     vars = list(
