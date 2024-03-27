@@ -16,6 +16,8 @@
 #'
 #' @param bRetInd      Indicator whether individual trial results should be saved as well
 #' 
+#' @param seed         Random seed for reproducibility
+#' 
 #' @param export       Further Arguments to be exported to slaves
 #'
 #' @param ...          All other design parameters 
@@ -40,12 +42,12 @@ fnSimDsgnOC <-
     cNameCsv = "Test",
     bRetList = FALSE,
     bRetInd  = FALSE,
-    export = NULL,
+    export   = NULL,
+    seed     = 3500,
     ...
   ) {
     
     # Always use lSummary
-    
     
     # Since R CMD check allows only for 2 cores, set this
     if (nCores > 1) {
@@ -55,7 +57,7 @@ fnSimDsgnOC <-
       }
       
       # Prepare for parallel computing
-      cl <- parallel::makePSOCKcluster(nCores)
+      cl <- parallel::makeCluster(nCores)
       doParallel::registerDoParallel(cl)
       
       "%dopar%" <- foreach::"%dopar%"
@@ -77,6 +79,8 @@ fnSimDsgnOC <-
       parallel::stopCluster(cl)
       
     } else {
+      
+      set.seed(seed)
       
       arguments <- list(lPltfDsgn, ...) # gather additional program arguments
       
