@@ -16,7 +16,7 @@
 #'
 #' @param bRetInd      Indicator whether individual trial results should be saved as well
 #' 
-#' @param seed         Random seed for reproducibility
+#' @param fseed         Random seed for reproducibility
 #' 
 #' @param export       Further Arguments to be exported to slaves
 #'
@@ -43,7 +43,7 @@ fnSimDsgnOC <-
     bRetList = FALSE,
     bRetInd  = FALSE,
     export   = NULL,
-    seed     = 3500,
+    fseed    = 3500,
     ...
   ) {
     
@@ -80,8 +80,6 @@ fnSimDsgnOC <-
       
     } else {
       
-      set.seed(seed)
-      
       arguments <- list(lPltfDsgn, ...) # gather additional program arguments
       
       ##### Run parallel simulations #####
@@ -91,7 +89,7 @@ fnSimDsgnOC <-
       
       for (i in 1:nIter) {
         # first call program function
-        trial_res <- do.call(fnRunSingleTrialSim, arguments)
+        trial_res <- do.call(fnRunSingleTrialSim, c(arguments, fseed = fseed + i))
         # Now save individual trial results
         trial_results <- c(trial_results, list(trial_res$lSummary))
       }
@@ -166,10 +164,17 @@ fnSimDsgnOC <-
     #   }
     # }
     
+    ret <- lOC
+    
+    if (bRetInd) {
+      ret <- 
+        c(
+          list(ret),
+          list(trial_results)
+        )
+    }
     
     # Return return list
-    return(
-      lOC
-    )
+    return(ret)
     
   }

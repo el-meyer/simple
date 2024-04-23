@@ -11,8 +11,15 @@ a modular manner.
 
 ## Installation
 
+You can install the latest stable version from [GitHub](https://github.com/el-meyer/simple) using:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("el-meyer/simple@*release")
+```
+
 You can install the development version from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/el-meyer/simple) with:
 
 ``` r
 # install.packages("devtools")
@@ -21,8 +28,7 @@ devtools::install_github("el-meyer/simple")
 
 ## Usage
 
-Please see an upcoming paper for more information on the usage of this
-paper.
+Please see [Meyer et al. 2023](https://www.sciencedirect.com/science/article/pii/S235271102300211X) for more information. More documentation and user guides will be released with an upcoming v1.0 soon.
 
 ## Disclaimer
 

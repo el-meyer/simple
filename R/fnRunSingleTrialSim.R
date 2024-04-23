@@ -8,6 +8,8 @@
 #' 
 #' @param cLogName           Name of Log File; Default is "platform"
 #' 
+#' @param fseed               Random Number Seed used to simulate trial
+#' 
 #' @export
 
 # Where to add data management to reduce runtime?
@@ -17,8 +19,11 @@ fnRunSingleTrialSim <-
     lPltfDsgn,                
     bRetainSnaps = TRUE,      
     bCreateLog   = FALSE,      
-    cLogName     = "platform" 
+    cLogName     = "platform",
+    fseed        = 3500
   ) {
+    
+    set.seed(fseed, kind = "L'Ecuyer-CMRG")
     
     # Check whether or not to create a log
     if (bCreateLog) {
@@ -177,14 +182,15 @@ fnRunSingleTrialSim <-
       ret$lSnapshots <- lSnapshots
     }
     if (!is.null(out)) {
-      ret$lSummary <- out
+      ret$lSummary <- c(
+        out, 
+        seed = fseed
+      )
     }
     
     sink()
     
     # Return return list
-    return(
-      ret
-    )
+    return(ret)
     
   }
