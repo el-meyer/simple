@@ -16,8 +16,6 @@
 #'
 #' @param bRetInd      Indicator whether individual trial results should be saved as well
 #' 
-#' @param fseed         Random seed for reproducibility
-#' 
 #' @param export       Further Arguments to be exported to slaves
 #'
 #' @param ...          All other design parameters 
@@ -43,7 +41,6 @@ fnSimDsgnOC <-
     bRetList = FALSE,
     bRetInd  = FALSE,
     export   = NULL,
-    fseed    = 3500,
     ...
   ) {
     
@@ -57,7 +54,7 @@ fnSimDsgnOC <-
       }
       
       # Prepare for parallel computing
-      cl <- parallel::makeCluster(nCores)
+      cl <- parallel::makePSOCKcluster(nCores)
       doParallel::registerDoParallel(cl)
       
       "%dopar%" <- foreach::"%dopar%"
@@ -89,7 +86,7 @@ fnSimDsgnOC <-
       
       for (i in 1:nIter) {
         # first call program function
-        trial_res <- do.call(fnRunSingleTrialSim, c(arguments, fseed = fseed + i))
+        trial_res <- do.call(fnRunSingleTrialSim, arguments)
         # Now save individual trial results
         trial_results <- c(trial_results, list(trial_res$lSummary))
       }
