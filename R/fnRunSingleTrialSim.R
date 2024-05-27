@@ -180,7 +180,6 @@ fnRunSingleTrialSim <-
       ret$lSummary <- out
     }
     
-    # Get output back to console
     sink()
     
     # Return return list
