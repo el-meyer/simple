@@ -81,7 +81,7 @@ fnSimpleDesign <- function(
 ) {
   
   # Create all sort of warning messages and stop messages
-  
+  # TODO
   
   # add all ISAs separately
   lIntrDsgn <- list()
