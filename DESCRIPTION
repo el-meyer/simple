@@ -6,7 +6,7 @@ Authors@R:
     person(given = "Elias Laurin",
            family = "Meyer",
            role = c("aut", "cre"),
-           email = "elias.meyer@meduniwien.ac.at"),
+           email = "elias@berryconsultants.net"),
     person(given = "Franz",
            family = "Koenig",
            role = c("ctb")),
