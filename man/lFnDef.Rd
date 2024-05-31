@@ -7,13 +7,20 @@
 \title{List of Function Definitions}
 \usage{
 new_lFnDef(
-  fnInitialize = function(lPltfDsgn) { },
-  fnAddNewIntr = function(lPltfDsgn, lPltfTrial) { },
-  fnUpdateAlloc = function(lPltfDsgn, lPltfTrial) { },
-  fnGenNewPatData = function(lPltfDsgn, lPltfTrial) { },
-  fnIntrAction = function(lPltfDsgn, lPltfTrial) { },
-  fnCheckTrialClose = function(lPltfDsgn, lPltfTrial) { },
-  fnWrapup = function(lPltfDsgn, lPltfTrial) { }
+  fnInitialize = function(lPltfDsgn) {
+ },
+  fnAddNewIntr = function(lPltfDsgn, lPltfTrial) {
+ },
+  fnUpdateAlloc = function(lPltfDsgn, lPltfTrial) {
+ },
+  fnGenNewPatData = function(lPltfDsgn, lPltfTrial) {
+ },
+  fnIntrAction = function(lPltfDsgn, lPltfTrial) {
+ },
+  fnCheckTrialClose = function(lPltfDsgn, lPltfTrial) {
+ },
+  fnWrapup = function(lPltfDsgn, lPltfTrial) {
+ }
 )
 
 validate_lFnDef(x)
@@ -22,7 +29,4 @@ lFnDef()
 }
 \description{
 Different ISA Designs to draw from of class lIntrDsgnList
-}
-\examples{
-
 }

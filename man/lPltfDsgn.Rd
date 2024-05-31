@@ -15,6 +15,3 @@ lPltfDsgn(lIntrDsgn, ...)
 \description{
 Platform Trial Design List of class lPltfDsgn
 }
-\examples{
-
-}

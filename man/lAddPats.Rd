@@ -7,8 +7,11 @@
 \alias{summary.lAddPats}
 \title{Add simulated Pats to ISAs}
 \usage{
-new_lAddPats(fnAddPats = function(lPltfTrial, lAddArgs) {
-}, lAddArgs = list())
+new_lAddPats(
+  fnAddPats = function(lPltfTrial, lAddArgs) {
+ },
+  lAddArgs = list()
+)
 
 validate_lAddPats(x)
 
@@ -18,7 +21,4 @@ lAddPats()
 }
 \description{
 Functions and rules for adding Pats to ISAs of class lAddPats
-}
-\examples{
-
 }

@@ -8,7 +8,8 @@
 \title{Check if Platform Stopping Rules are reached}
 \usage{
 new_lStopRule(
-  fnStopRule = function(lPltfTrial, lAddArgs) { },
+  fnStopRule = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -25,7 +26,4 @@ lStopRule(nWeeks = NULL, bNoActive = NULL)
 }
 \description{
 Functions for creating, validating and simple use of class lStopRule
-}
-\examples{
-
 }

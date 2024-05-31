@@ -7,8 +7,11 @@
 \alias{summary.lSnap}
 \title{List of current trial snapshot}
 \usage{
-new_lSnap(fnSnap = function(lPltfTrial, lAddArgs) {
-}, lAddArgs = list())
+new_lSnap(
+  fnSnap = function(lPltfTrial, lAddArgs) {
+ },
+  lAddArgs = list()
+)
 
 validate_lSnap(x)
 
@@ -23,7 +26,4 @@ lSnap()
 }
 \description{
 List of snapshot variables to be extracted in simulations and passed to different methods
-}
-\examples{
-
 }

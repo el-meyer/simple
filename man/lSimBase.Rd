@@ -6,8 +6,11 @@
 \alias{validate_lSimBase}
 \title{Simulation of patient Baseline data}
 \usage{
-new_lSimBase(fnSimBase = function(lPltfTrial, lAddArgs) {
-}, lAddArgs = list())
+new_lSimBase(
+  fnSimBase = function(lPltfTrial, lAddArgs) {
+ },
+  lAddArgs = list()
+)
 
 validate_lSimBase(x)
 
@@ -15,7 +18,4 @@ lSimBase(vars = list(list("time", "t")), names = c("InclusionTime"))
 }
 \description{
 Functions and rules for simulating patient Baseline data of class lSimBase
-}
-\examples{
-
 }

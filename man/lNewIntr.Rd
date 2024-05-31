@@ -8,8 +8,11 @@
 \alias{summary.lNewIntr}
 \title{ISA inclusion rules}
 \usage{
-new_lNewIntr(fnNewIntr = function(lPltfTrial, lAddArgs) {
-}, lAddArgs = list())
+new_lNewIntr(
+  fnNewIntr = function(lPltfTrial, lAddArgs) {
+ },
+  lAddArgs = list()
+)
 
 validate_lNewIntr(x)
 
@@ -36,7 +39,7 @@ Rules for ISA starting times of class lNewIntr
 }
 \examples{
 
-x <- lNewIntr(4)
+x <- lNewIntr(4,4)
 validate_lNewIntr(x)
 plot(x)
 summary(x)

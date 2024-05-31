@@ -6,8 +6,11 @@
 \alias{validate_lOCSynth}
 \title{Synthesize individual trial simulations into OCs}
 \usage{
-new_lOCSynth(fnOCSynth = function(lIndTrials, lAddArgs) {
-}, lAddArgs = list())
+new_lOCSynth(
+  fnOCSynth = function(lIndTrials, lAddArgs) {
+ },
+  lAddArgs = list()
+)
 
 validate_lOCSynth(x)
 
@@ -15,7 +18,4 @@ lOCSynth()
 }
 \description{
 Functions and rules for synthesizing results of class lOCSynth
-}
-\examples{
-
 }

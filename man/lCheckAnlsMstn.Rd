@@ -7,7 +7,8 @@
 \title{Check Analysis Milestone}
 \usage{
 new_lCheckAnlsMstn(
-  fnCheckAnlsMstn = function(lPltfTrial, lAddArgs) { },
+  fnCheckAnlsMstn = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -17,7 +18,4 @@ lCheckAnlsMstn(bInclude = TRUE, vInfTimes = c(1), column = "OutObsTime")
 }
 \description{
 Functions and rules for checking analysis milestone of class lCheckAnlsMstn
-}
-\examples{
-
 }

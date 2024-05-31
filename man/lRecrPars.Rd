@@ -9,7 +9,8 @@
 \title{Recruitment Parameters}
 \usage{
 new_lRecrPars(
-  fnRecrProc = function(lPltfTrial, lAddArgs) { },
+  fnRecrProc = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 

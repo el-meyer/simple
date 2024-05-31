@@ -33,6 +33,3 @@ lIntrDsgn(
 \description{
 Different ISA Designs to draw from of class lIntrDsgnList
 }
-\examples{
-
-}

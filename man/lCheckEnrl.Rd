@@ -8,7 +8,8 @@
 \title{Check ISA Enrollment}
 \usage{
 new_lCheckEnrl(
-  fnCheckEnrl = function(lPltfTrial, lAddArgs) { },
+  fnCheckEnrl = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -20,7 +21,4 @@ lCheckEnrl()
 }
 \description{
 Functions and rules for within ISA checking of Enrollment of class lCheckEnrl
-}
-\examples{
-
 }

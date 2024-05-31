@@ -7,7 +7,8 @@
 \title{Synthesize trial results into decisions}
 \usage{
 new_lSynthRes(
-  fnSynthRes = function(lPltfTrial, lAddArgs) { },
+  fnSynthRes = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -17,7 +18,4 @@ lSynthRes(alpha = 0.05)
 }
 \description{
 Functions and rules for synthesizing results of class lSynthRes
-}
-\examples{
-
 }

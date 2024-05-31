@@ -7,7 +7,8 @@
 \title{Initialization of ISA}
 \usage{
 new_lInitIntr(
-  fnInitIntr = function(lPltfTrial, lAddArgs) { },
+  fnInitIntr = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -29,7 +30,4 @@ lInitIntr(
 }
 \description{
 Functions for creating, validating and simple use of class lInitIntr
-}
-\examples{
-
 }

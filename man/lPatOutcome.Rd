@@ -7,7 +7,8 @@
 \title{Simulate patient outcomes}
 \usage{
 new_lPatOutcome(
-  fnPatOutcome = function(lPltfTrial, lAddArgs) { },
+  fnPatOutcome = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -17,7 +18,4 @@ lPatOutcome(cGroups, dTheta, dSigma = NULL, dTrend, nLag)
 }
 \description{
 Functions and rules for simulation of patient outcomes of class lPatOutcome
-}
-\examples{
-
 }

@@ -7,7 +7,8 @@
 \title{Update between ISA allocation ratio}
 \usage{
 new_lUpdIntrAlloc(
-  fnUpdIntrAlloc = function(lPltfTrial, lAddArgs) { },
+  fnUpdIntrAlloc = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -17,7 +18,4 @@ lUpdIntrAlloc()
 }
 \description{
 Functions and rules for between ISA allocation ratio update of class lUpdIntrAlloc
-}
-\examples{
-
 }

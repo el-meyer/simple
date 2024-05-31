@@ -7,7 +7,8 @@
 \title{Summarize the platform trial}
 \usage{
 new_lPltfSummary(
-  fnPltfSummary = function(lPltfTrial, lAddArgs) { },
+  fnPltfSummary = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -22,7 +23,4 @@ lPltfSummary()
 }
 \description{
 Functions for summarizing the platform trial of class lPltfSummary
-}
-\examples{
-
 }

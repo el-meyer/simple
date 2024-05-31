@@ -8,7 +8,8 @@
 \title{Between ISA allocation ratio}
 \usage{
 new_lAllocIntr(
-  fnAllocIntr = function(lPltfTrial, lAddArgs) { },
+  fnAllocIntr = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -20,7 +21,4 @@ lAllocIntr()
 }
 \description{
 Functions and rules for between ISA allocation ratio of class lAllocIntr
-}
-\examples{
-
 }

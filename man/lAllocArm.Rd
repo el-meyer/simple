@@ -7,7 +7,8 @@
 \title{Within ISA allocation ratio}
 \usage{
 new_lAllocArm(
-  fnAllocArm = function(lPltfTrial, lAddArgs) { },
+  fnAllocArm = function(lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -17,7 +18,4 @@ lAllocArm()
 }
 \description{
 Functions and rules for within ISA allocation ratio of class lAllocArm
-}
-\examples{
-
 }

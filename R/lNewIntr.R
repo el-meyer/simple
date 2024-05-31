@@ -8,7 +8,7 @@
 #' 
 #' @examples
 #' 
-#' x <- lNewIntr(4)
+#' x <- lNewIntr(4,4)
 #' validate_lNewIntr(x)
 #' plot(x)
 #' summary(x)

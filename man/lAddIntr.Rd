@@ -8,7 +8,8 @@
 \title{Addition of ISAs into ongoing platform trial}
 \usage{
 new_lAddIntr(
-  fnAddIntr = function(lPltfDsgn, lPltfTrial, lAddArgs) { },
+  fnAddIntr = function(lPltfDsgn, lPltfTrial, lAddArgs) {
+ },
   lAddArgs = list()
 )
 
@@ -25,7 +26,4 @@ lAddIntr()
 }
 \description{
 Functions for creating, validating and simple use of class lAddIntr
-}
-\examples{
-
 }
