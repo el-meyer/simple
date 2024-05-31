@@ -9,8 +9,8 @@
   packageStartupMessage("Visit for more information: ")
   packageStartupMessage("https://github.com/el-meyer/simple/")
   packageStartupMessage(rule)
-  packageStartupMessage("Don't forget to report bugs and request features under:")
-  packageStartupMessage("https://github.com/el-meyer/simple/issues")
+  packageStartupMessage("For additional designers, install the simpleDesigners package:")
+  packageStartupMessage("https://github.com/el-meyer/simpleDesigners/")
   packageStartupMessage(rule)
   
 }
