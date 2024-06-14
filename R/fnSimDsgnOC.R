@@ -17,6 +17,8 @@
 #' @param bRetInd      Indicator whether individual trial results should be saved as well
 #' 
 #' @param export       Further Arguments to be exported to slaves
+#' 
+#' @param nStartSeed   Only used when nCores == 1, used for debugging
 #'
 #' @param ...          All other design parameters 
 #'
@@ -34,13 +36,14 @@ fnSimDsgnOC <-
   function(
     lPltfDsgn,                
     nIter,
-    nCores   = 1,
-    bSaveCsv = FALSE,
-    cPathCsv = getwd(),
-    cNameCsv = "Test",
-    bRetList = FALSE,
-    bRetInd  = FALSE,
-    export   = NULL,
+    nCores     = 1,
+    bSaveCsv   = FALSE,
+    cPathCsv   = getwd(),
+    cNameCsv   = "Test",
+    bRetList   = FALSE,
+    bRetInd    = FALSE,
+    export     = NULL,
+    nStartSeed = NULL,
     ...
   ) {
     
@@ -85,6 +88,9 @@ fnSimDsgnOC <-
       trial_results <- list()
       
       for (i in 1:nIter) {
+        if (!is.null(nStartSeed)) {
+          set.seed(nStartSeed - 1 + i)
+        }
         # first call program function
         trial_res <- do.call(fnRunSingleTrialSim, arguments)
         # Now save individual trial results
