@@ -40,9 +40,16 @@ validate_lAnls <- function(x) {
 lAnls <- function(
   endpoint = "binary",
   analysis_function_binary = function(x) {
-    stats::prop.test(
-      table(x$Arm, x$Outcome)
-    )$p.value
+    matOutcome <- table(x$Arm, x$Outcome)
+    if (ncol(matOutcome) == 1) {
+      ret <- 1
+    } else (
+      ret <- 
+        stats::prop.test(
+          matOutcome
+        )$p.value
+    )
+    return(ret)
   }, # takes whole dataset as input
   analysis_function_continuous = function(x) {
     stats::t.test(
